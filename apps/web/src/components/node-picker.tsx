@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import type { GraphNodeDto, NodeLabel } from "@agentgraph/graph-schema";
 import { useCatalogList } from "@/hooks/use-catalog";
@@ -48,35 +49,43 @@ export function NodePicker({
         <ChevronsUpDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
       </div>
 
-      {open && (
-        <div className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-md">
-          {results.isLoading ? (
-            <div className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" /> Searching…
-            </div>
-          ) : results.data?.items.length === 0 ? (
-            <p className="px-3 py-3 text-sm text-muted-foreground">No matches.</p>
-          ) : (
-            results.data?.items.map((item) => (
-              <button
-                type="button"
-                key={item.id}
-                className={cn(
-                  "flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground",
-                )}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  onSelect(item);
-                  setOpen(false);
-                }}
-              >
-                {nodeName(item.properties)}
-                {value?.id === item.id && <Check className="h-3.5 w-3.5" />}
-              </button>
-            ))
-          )}
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.12 }}
+            className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-md"
+          >
+            {results.isLoading ? (
+              <div className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Searching…
+              </div>
+            ) : results.data?.items.length === 0 ? (
+              <p className="px-3 py-3 text-sm text-muted-foreground">No matches.</p>
+            ) : (
+              results.data?.items.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  className={cn(
+                    "flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                  )}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    onSelect(item);
+                    setOpen(false);
+                  }}
+                >
+                  {nodeName(item.properties)}
+                  {value?.id === item.id && <Check className="h-3.5 w-3.5" />}
+                </button>
+              ))
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

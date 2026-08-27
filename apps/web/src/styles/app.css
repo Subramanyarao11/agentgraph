@@ -120,3 +120,29 @@
     font-feature-settings: "cv11", "ss01";
   }
 }
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+.animate-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    hsl(var(--foreground) / 0.06) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer {
+    animation: none;
+  }
+}

@@ -17,6 +17,7 @@ AgentGraph models a company's AI agents, the tools they call (Slack, Jira, Sales
 - [Architecture](#architecture)
 - [Setup](#setup)
 - [The queries, explained](#the-queries-explained)
+- [Frontend engineering](#frontend-engineering)
 - [Testing & CI](#testing--ci)
 - [Project structure](#project-structure)
 - [Screenshots](#screenshots)
@@ -186,6 +187,16 @@ RETURN node, score ORDER BY score DESC LIMIT 10
 ```
 Search terms are escaped against Lucene's special-character syntax before being passed as a parameter (see `escapeLuceneTerm` in [`apps/api/src/search/search.service.ts`](./apps/api/src/search/search.service.ts)) — this is the one CognoDB headline feature (fulltext indexing) the rest of the app doesn't otherwise exercise.
 
+## Frontend engineering
+
+- **Route-level code splitting.** Every route is split into a plain file (`analysis.impact.tsx`, registers the path) and a `.lazy.tsx` sibling (the actual component + its imports), TanStack Router's supported convention for this. Verified against the real build output, not assumed — `vite build` emits a separate ~2–4KB chunk per route, fetched only on navigation (confirmed via the network tab: visiting `/analysis/impact` fetches `analysis.impact.lazy-*.js` and nothing else).
+- **Error boundaries.** The root route sets `errorComponent` (catches a render/loader throw from any matched route without unmounting the sidebar), `notFoundComponent` (bad URLs, thrown `notFound()`), and `pendingComponent` (a thin top-of-viewport progress bar during route-chunk fetches, `pendingMs: 150` so it doesn't flash on fast transitions). A crash in one page no longer white-screens the app.
+- **Skeletons that mirror real layout.** `components/skeletons.tsx` has one skeleton shape per layout pattern used across the app (`TableSkeleton`, `CardGridSkeleton`, `ListSkeleton`, `StatTilesSkeleton`) so the loading state has the same column count / card shape as the loaded content — no layout shift when data arrives.
+- **One motion system, not per-component ad hoc animation.** `components/motion.tsx` defines the app's entire animation vocabulary — `FadeIn`, `StaggerGroup`/`StaggerItem`, one easing curve, one duration scale — used consistently for page entrances, list/table row reveals, and dialog/dropdown transitions. `MotionConfig reducedMotion="user"` at the root means every animation degrades to opacity-only for users with reduced-motion preferences, automatically.
+- **Dark mode was silently broken, then fixed properly.** `app.css` originally had an explicit `[data-theme="dark"]` override but no `prefers-color-scheme` fallback, so the app was permanently light regardless of OS setting. Rebuilt as a proper cascade (system preference → explicit user override, toggle persisted to `localStorage`) with a pre-hydration inline script so there's no flash of the wrong theme on load.
+- **Two Radix-based UI primitives (`Select`, `Separator`) were dead code** — built early, never actually wired into any page. Confirmed via `grep` before deleting, along with their now-unused `@radix-ui/*` dependencies, rather than leaving unused components for a reviewer to wonder about.
+- **One dialog animation was silently inert.** The shared `Dialog` component referenced `tailwindcss-animate` utility classes (`animate-in`, `fade-in-0`) from a plugin that was never installed — Tailwind treats unknown utilities as a no-op, so the dialog had been opening with zero transition. Replaced with manual `data-[state=]`-driven transitions (verified working) across `Dialog`, the command palette, and `Tooltip`.
+
 ## Testing & CI
 
 ```bash
@@ -220,9 +231,12 @@ graphdb/
 │   │       └── seed/         seed data generator + batched graph loader
 │   └── web/                  TanStack Start frontend
 │       └── src/
-│           ├── routes/       one file per page (file-based routing)
+│           ├── routes/       one file per page (file-based routing), each split into a
+│           │                 plain file + a .lazy.tsx sibling for route-level code splitting
 │           ├── components/   ui/ (shadcn primitives), graph/ (force-directed SVG viz), layout/,
-│           │                 command-palette.tsx (⌘K), cypher-panel.tsx ("Show query")
+│           │                 command-palette.tsx (⌘K), cypher-panel.tsx ("Show query"),
+│           │                 motion.tsx (the app's one animation system), skeletons.tsx,
+│           │                 route-error-boundary.tsx / route-not-found.tsx / route-pending.tsx
 │           └── hooks/        TanStack Query hooks, one per API area
 ├── packages/
 │   ├── graph-schema/         Zod schemas + TS types (the domain model) + cypher.ts (shared queries)

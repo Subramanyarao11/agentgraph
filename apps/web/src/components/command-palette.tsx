@@ -56,9 +56,9 @@ export function CommandPalette() {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-150 data-[state=closed]:opacity-0 data-[state=open]:opacity-100" />
         <DialogPrimitive.Content
-          className="fixed left-1/2 top-[18%] z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-xl"
+          className="fixed left-1/2 top-[18%] z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-popover shadow-xl transition-[opacity,transform] duration-150 data-[state=closed]:scale-95 data-[state=closed]:opacity-0 data-[state=open]:scale-100 data-[state=open]:opacity-100"
           aria-describedby={undefined}
         >
           <DialogPrimitive.Title className="sr-only">Search AgentGraph</DialogPrimitive.Title>
@@ -89,7 +89,7 @@ export function CommandPalette() {
                     key={r.node.id}
                     type="button"
                     onClick={() => goTo(r.node.label, String(r.node.properties.id))}
-                    className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                    className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                   >
                     <display.icon className={`h-4 w-4 shrink-0 ${display.color}`} />
                     <span className="flex-1 truncate">{nodeName(r.node.properties)}</span>

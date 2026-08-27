@@ -2,10 +2,18 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { MotionConfig } from "framer-motion";
 import { createQueryClient } from "@/lib/query-client";
+import { RouteErrorBoundary } from "@/components/route-error-boundary";
+import { RouteNotFound } from "@/components/route-not-found";
+import { RoutePending } from "@/components/route-pending";
 import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRoute({
+  errorComponent: RouteErrorBoundary,
+  notFoundComponent: RouteNotFound,
+  pendingComponent: RoutePending,
+  pendingMs: 150,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -53,7 +61,10 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          {/* Honors the OS "reduce motion" setting — framer-motion swaps transforms for opacity-only. */}
+          <MotionConfig reducedMotion="user">{children}</MotionConfig>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>
