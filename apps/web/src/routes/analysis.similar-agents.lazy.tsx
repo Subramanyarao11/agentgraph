@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CYPHER_EXPLAINERS, SIMILAR_AGENTS_QUERY, type GraphNodeDto } from "@agentgraph/graph-schema";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -34,8 +34,10 @@ function SimilarAgentsPage() {
       <Card className="mb-4">
         <CardContent className="pt-5">
           <div className="w-72 space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Agent</label>
-            <NodePicker label="Agent" value={selected} onSelect={setSelected} />
+            <label htmlFor="similar-agents-node-picker" className="text-xs font-medium text-muted-foreground">
+              Agent
+            </label>
+            <NodePicker id="similar-agents-node-picker" label="Agent" value={selected} onSelect={setSelected} />
           </div>
         </CardContent>
       </Card>
@@ -70,7 +72,7 @@ function SimilarAgentsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-                        <motion.div
+                        <m.div
                           className="h-full rounded-full bg-primary"
                           initial={{ width: 0 }}
                           animate={{ width: `${pct}%` }}

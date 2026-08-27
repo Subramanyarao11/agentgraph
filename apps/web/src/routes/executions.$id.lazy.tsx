@@ -26,7 +26,7 @@ function ExecutionTracePage() {
       actions={
         <Button asChild variant="outline" size="sm">
           <Link to="/executions">
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to Executions
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Back to Executions
           </Link>
         </Button>
       }
@@ -68,7 +68,7 @@ function ExecutionTracePage() {
                   params={{ label: "Agent", id: String(query.data.triggeredBy.properties.id) }}
                   className="flex items-center gap-2 text-sm font-medium hover:underline"
                 >
-                  <NODE_DISPLAY.Agent.icon className="h-4 w-4 text-primary" />
+                  <NODE_DISPLAY.Agent.icon className="h-4 w-4 text-primary" aria-hidden="true" />
                   {nodeName(query.data.triggeredBy.properties)}
                 </Link>
               </CardContent>
@@ -85,7 +85,7 @@ function ExecutionTracePage() {
                   params={{ label: "Workflow", id: String(query.data.workflow.properties.id) }}
                   className="flex items-center gap-2 text-sm font-medium hover:underline"
                 >
-                  <NODE_DISPLAY.Workflow.icon className="h-4 w-4 text-emerald-500" />
+                  <NODE_DISPLAY.Workflow.icon className="h-4 w-4 text-emerald-500" aria-hidden="true" />
                   {nodeName(query.data.workflow.properties)}
                 </Link>
               </CardContent>
@@ -109,7 +109,7 @@ function ExecutionTracePage() {
                         params={{ label: "Dataset", id: String(t.dataset?.properties.id) }}
                         className="flex items-center gap-2 hover:underline"
                       >
-                        <NODE_DISPLAY.Dataset.icon className="h-3.5 w-3.5 text-rose-500" />
+                        <NODE_DISPLAY.Dataset.icon className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />
                         {t.dataset ? nodeName(t.dataset.properties) : "Unknown"}
                       </Link>
                       <Badge variant="outline">{t.access}</Badge>

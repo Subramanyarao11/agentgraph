@@ -35,8 +35,13 @@ function CatalogListPage() {
     <AppShell title={display.plural} description={`Browse every ${label} node in the graph.`}>
       <div className="mb-4 flex items-center gap-3">
         <div className="relative w-full max-w-xs">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
+            type="search"
+            aria-label={`Search ${display.plural.toLowerCase()}`}
             placeholder={`Search ${display.plural.toLowerCase()}…`}
             className="pl-8"
             value={search}
@@ -46,9 +51,9 @@ function CatalogListPage() {
             }}
           />
         </div>
-        {query.data && (
-          <span className="text-xs text-muted-foreground">{query.data.total} total</span>
-        )}
+        <span className="text-xs text-muted-foreground" aria-live="polite">
+          {query.data ? `${query.data.total} total` : ""}
+        </span>
       </div>
 
       {query.isLoading ? (
@@ -104,7 +109,7 @@ function CatalogListPage() {
             </p>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>
-                <ChevronLeft className="h-3.5 w-3.5" /> Prev
+                <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> Prev
               </Button>
               <Button
                 variant="outline"
@@ -112,7 +117,7 @@ function CatalogListPage() {
                 disabled={offset + PAGE_SIZE >= (query.data?.total ?? 0)}
                 onClick={() => setOffset(offset + PAGE_SIZE)}
               >
-                Next <ChevronRight className="h-3.5 w-3.5" />
+                Next <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
               </Button>
             </div>
           </div>

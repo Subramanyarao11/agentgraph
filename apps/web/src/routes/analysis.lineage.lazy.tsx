@@ -34,8 +34,10 @@ function LineagePage() {
       <Card className="mb-4">
         <CardContent className="pt-5">
           <div className="w-72 space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Dataset</label>
-            <NodePicker label="Dataset" value={selected} onSelect={setSelected} />
+            <label htmlFor="lineage-node-picker" className="text-xs font-medium text-muted-foreground">
+              Dataset
+            </label>
+            <NodePicker id="lineage-node-picker" label="Dataset" value={selected} onSelect={setSelected} />
           </div>
         </CardContent>
       </Card>

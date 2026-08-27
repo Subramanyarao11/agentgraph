@@ -1,5 +1,18 @@
 import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
-import { NodeLabelSchema } from "@agentgraph/graph-schema";
+import { NodeLabelSchema, type NodeLabel } from "@agentgraph/graph-schema";
+
+// Kept separate from lib/node-display's NODE_DISPLAY (which also carries lucide icon
+// components) so this always-eager route file's title lookup doesn't pull icons into
+// the main bundle — those stay in the .lazy.tsx chunk where they're actually used.
+const PLURAL: Record<NodeLabel, string> = {
+  Person: "People",
+  Agent: "Agents",
+  Tool: "Tools",
+  Workflow: "Workflows",
+  Step: "Steps",
+  Dataset: "Datasets",
+  Execution: "Executions",
+};
 
 /**
  * Pure layout route: validates `label` once for both children
@@ -15,5 +28,6 @@ export const Route = createFileRoute("/catalog/$label")({
       return { label: result.data };
     },
   },
+  head: ({ params }) => ({ meta: [{ title: `${PLURAL[params.label]} — AgentGraph` }] }),
   component: () => <Outlet />,
 });

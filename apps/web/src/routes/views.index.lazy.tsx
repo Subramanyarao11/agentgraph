@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Bookmark, Trash2 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,9 +36,13 @@ function SavedViewsPage() {
         />
       ) : (
         <StaggerGroup className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <AnimatePresence mode="popLayout">
+          {/* No `layout` prop / mode="popLayout" here — those need framer-motion's
+              larger domMax feature bundle for layout projection. The domAnimation
+              bundle (see root route) covers the fade+scale exit fine; remaining
+              cards just reflow via normal CSS grid instead of animating into the gap. */}
+          <AnimatePresence>
             {query.data?.map((view) => (
-              <motion.div key={view.id} layout exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.15 }}>
+              <m.div key={view.id} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.15 }}>
                 <StaggerItem>
                   <Card>
                     <CardHeader className="flex-row items-start justify-between space-y-0">
@@ -52,13 +56,19 @@ function SavedViewsPage() {
                       <code className="rounded bg-secondary px-2 py-1 text-xs text-muted-foreground">
                         {JSON.stringify(view.params)}
                       </code>
-                      <Button variant="ghost" size="icon" onClick={() => remove.mutate(view.id)} disabled={remove.isPending}>
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Delete saved view "${view.name}"`}
+                        onClick={() => remove.mutate(view.id)}
+                        disabled={remove.isPending}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" aria-hidden="true" />
                       </Button>
                     </CardContent>
                   </Card>
                 </StaggerItem>
-              </motion.div>
+              </m.div>
             ))}
           </AnimatePresence>
         </StaggerGroup>

@@ -40,7 +40,7 @@ function LeaderboardPage() {
             onClick={() => enqueue.mutate(undefined, { onSuccess: (data) => setJobId(data.jobId) })}
             disabled={enqueue.isPending || isRunning}
           >
-            {(enqueue.isPending || isRunning) && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {(enqueue.isPending || isRunning) && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
             {isRunning ? "Running…" : "Compute leaderboard"}
           </Button>
         </CardContent>
@@ -62,10 +62,20 @@ function LeaderboardPage() {
               </div>
               <JobStatusBadge status={status.data?.status} />
             </CardHeader>
+            {/* Visually redundant with the badge/spinner above — exists purely so a screen
+                reader announces each state transition (queued → running → complete) without
+                the user needing to re-poll the page. */}
+            <p className="sr-only" role="status" aria-live="polite">
+              {isRunning
+                ? "Similarity leaderboard job is running."
+                : status.data?.status === "completed"
+                  ? `Similarity leaderboard job complete, ${status.data.result?.length ?? 0} pairs found.`
+                  : ""}
+            </p>
             <CardContent>
               {isRunning || !status.data?.result ? (
                 <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Computing across the graph…
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Computing across the graph…
                 </div>
               ) : status.data.result.length === 0 ? (
                 <p className="py-8 text-center text-sm text-muted-foreground">No agent pairs share 2+ tools yet.</p>

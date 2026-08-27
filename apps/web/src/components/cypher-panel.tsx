@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useId, useState } from "react";
+import { AnimatePresence, m } from "framer-motion";
 import { Check, ChevronDown, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ export function CypherPanel({
 }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const panelId = useId();
 
   const trimmed = cypher
     .split("\n")
@@ -38,18 +39,24 @@ export function CypherPanel({
     <div className="rounded-xl border border-border bg-card">
       <button
         type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left"
       >
         <span className="flex items-center gap-2 text-sm font-medium">
-          <Terminal className="h-3.5 w-3.5 text-muted-foreground" />
+          <Terminal className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
           Show query
         </span>
-        <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+        <ChevronDown
+          className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")}
+          aria-hidden="true"
+        />
       </button>
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div
+          <m.div
+            id={panelId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -69,7 +76,7 @@ export function CypherPanel({
                   onClick={handleCopy}
                   aria-label="Copy query"
                 >
-                  {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? <Check className="h-3.5 w-3.5 text-success" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
                 </Button>
               </div>
               {params && Object.keys(params).length > 0 && (
@@ -82,7 +89,7 @@ export function CypherPanel({
                 </div>
               )}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

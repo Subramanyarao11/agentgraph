@@ -8,8 +8,8 @@ export function HealthIndicator() {
 
   if (isLoading) {
     return (
-      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking systems…
+      <span role="status" className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Checking systems…
       </span>
     );
   }
@@ -22,6 +22,8 @@ export function HealthIndicator() {
       <Tooltip>
         <TooltipTrigger asChild>
           <span
+            role="status"
+            aria-live="polite"
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
               allUp
@@ -29,7 +31,11 @@ export function HealthIndicator() {
                 : "border-destructive/30 bg-destructive/10 text-destructive",
             )}
           >
-            {allUp ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertCircle className="h-3.5 w-3.5" />}
+            {allUp ? (
+              <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
             {label}
           </span>
         </TooltipTrigger>

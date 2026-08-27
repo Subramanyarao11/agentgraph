@@ -32,7 +32,7 @@ function CatalogDetailPage() {
       actions={
         <Button asChild variant="outline" size="sm">
           <Link to="/catalog/$label" params={{ label }}>
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to {display.plural}
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Back to {display.plural}
           </Link>
         </Button>
       }

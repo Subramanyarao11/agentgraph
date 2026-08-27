@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,7 +18,7 @@ export function StatTile({
   tone?: "default" | "warning" | "destructive";
 }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+    <m.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
       <Card className="p-5">
         <div className="flex items-start justify-between">
           <div>
@@ -27,6 +27,7 @@ export function StatTile({
               <Skeleton className="mt-2 h-7 w-16" />
             ) : (
               <p
+                aria-live="polite"
                 className={cn(
                   "mt-1.5 text-2xl font-semibold tabular-nums",
                   tone === "warning" && "text-warning",
@@ -45,10 +46,10 @@ export function StatTile({
               tone === "destructive" && "bg-destructive/15 text-destructive",
             )}
           >
-            <Icon className="h-4.5 w-4.5" />
+            <Icon className="h-4.5 w-4.5" aria-hidden="true" />
           </div>
         </div>
       </Card>
-    </motion.div>
+    </m.div>
   );
 }

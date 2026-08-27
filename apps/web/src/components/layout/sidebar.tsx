@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
   Bookmark,
   Bot,
@@ -18,6 +19,10 @@ import {
   Waypoints,
 } from "lucide-react";
 import { CommandPalette, openCommandPalette } from "@/components/command-palette";
+import { catalogListQueryOptions } from "@/hooks/use-catalog";
+import { exposureQueryOptions } from "@/hooks/use-analysis";
+import { savedViewsQueryOptions } from "@/hooks/use-views";
+import type { NodeLabel } from "@agentgraph/graph-schema";
 import { cn } from "@/lib/utils";
 
 type LinkProps = ComponentProps<typeof Link>;
@@ -30,21 +35,59 @@ interface NavItem {
   params?: Record<string, string>;
   label: string;
   icon: typeof LayoutDashboard;
+  /**
+   * `defaultPreload: "intent"` (router.tsx) already prefetches a route's JS
+   * chunk on hover/focus — this prefetches the *data* it'll immediately
+   * fetch on mount too, using the exact same query key each page computes,
+   * so the click lands on a warm cache instead of a fresh loading spinner.
+   */
+  prefetch?: (queryClient: QueryClient) => void;
+}
+
+const CATALOG_PAGE = { limit: 25, offset: 0 };
+
+function prefetchCatalog(label: NodeLabel) {
+  return (queryClient: QueryClient) => queryClient.prefetchQuery(catalogListQueryOptions(label, CATALOG_PAGE));
 }
 
 const NAV_SECTIONS: Array<{ label: string; items: NavItem[] }> = [
   {
     label: "Overview",
-    items: [{ to: "/", label: "Dashboard", icon: LayoutDashboard }],
+    items: [
+      {
+        to: "/",
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        prefetch: (qc) => {
+          (["Agent", "Tool", "Workflow", "Dataset"] as const).forEach((label) =>
+            qc.prefetchQuery(catalogListQueryOptions(label, { limit: 1 })),
+          );
+          qc.prefetchQuery(catalogListQueryOptions("Execution", { limit: 8 }));
+          qc.prefetchQuery(exposureQueryOptions("pii"));
+        },
+      },
+    ],
   },
   {
     label: "Catalog",
     items: [
-      { to: "/catalog/$label", params: { label: "Agent" }, label: "Agents", icon: Bot },
-      { to: "/catalog/$label", params: { label: "Tool" }, label: "Tools", icon: Wrench },
-      { to: "/catalog/$label", params: { label: "Workflow" }, label: "Workflows", icon: WorkflowIcon },
-      { to: "/catalog/$label", params: { label: "Dataset" }, label: "Datasets", icon: Database },
-      { to: "/catalog/$label", params: { label: "Person" }, label: "People", icon: Users },
+      { to: "/catalog/$label", params: { label: "Agent" }, label: "Agents", icon: Bot, prefetch: prefetchCatalog("Agent") },
+      { to: "/catalog/$label", params: { label: "Tool" }, label: "Tools", icon: Wrench, prefetch: prefetchCatalog("Tool") },
+      {
+        to: "/catalog/$label",
+        params: { label: "Workflow" },
+        label: "Workflows",
+        icon: WorkflowIcon,
+        prefetch: prefetchCatalog("Workflow"),
+      },
+      {
+        to: "/catalog/$label",
+        params: { label: "Dataset" },
+        label: "Datasets",
+        icon: Database,
+        prefetch: prefetchCatalog("Dataset"),
+      },
+      { to: "/catalog/$label", params: { label: "Person" }, label: "People", icon: Users, prefetch: prefetchCatalog("Person") },
     ],
   },
   {
@@ -60,13 +103,20 @@ const NAV_SECTIONS: Array<{ label: string; items: NavItem[] }> = [
   {
     label: "Activity",
     items: [
-      { to: "/executions", label: "Executions", icon: PlayCircle },
-      { to: "/views", label: "Saved Views", icon: Bookmark },
+      {
+        to: "/executions",
+        label: "Executions",
+        icon: PlayCircle,
+        prefetch: prefetchCatalog("Execution"),
+      },
+      { to: "/views", label: "Saved Views", icon: Bookmark, prefetch: (qc) => qc.prefetchQuery(savedViewsQueryOptions) },
     ],
   },
 ];
 
 export function Sidebar() {
+  const queryClient = useQueryClient();
+
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card/50 md:flex">
       <div className="flex h-14 items-center gap-2 border-b border-border px-5">
@@ -100,12 +150,13 @@ export function Sidebar() {
                   to={item.to}
                   params={item.params as LinkProps["params"]}
                   activeOptions={{ exact: item.to === "/" }}
+                  onMouseEnter={() => item.prefetch?.(queryClient)}
                   className={cn(
                     "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
                   )}
                   activeProps={{ className: "!bg-accent !text-accent-foreground font-medium" }}
                 >
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-4 w-4" aria-hidden="true" />
                   {item.label}
                 </Link>
               ))}

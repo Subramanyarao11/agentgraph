@@ -9,9 +9,12 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
       : "Something went wrong loading this data. Please try again.";
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-6 py-14 text-center">
+    <div
+      role="alert"
+      className="flex flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-6 py-14 text-center"
+    >
       <div className="flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15">
-        <AlertTriangle className="h-5 w-5 text-destructive" />
+        <AlertTriangle className="h-5 w-5 text-destructive" aria-hidden="true" />
       </div>
       <div className="space-y-1">
         <p className="text-sm font-medium text-destructive">Couldn't load this</p>
@@ -19,7 +22,7 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
       </div>
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry}>
-          <RotateCw className="h-3.5 w-3.5" />
+          <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
           Retry
         </Button>
       )}

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import type { ExposurePathDto, GraphResultDto, SimilarAgentResultDto } from "@agentgraph/graph-schema";
 import { api, toQueryString } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
@@ -28,11 +28,15 @@ export function useSimilarAgents(agentId: string | undefined, limit = 5) {
   });
 }
 
-export function useExposure(sensitivity: "confidential" | "pii") {
-  return useQuery({
+export function exposureQueryOptions(sensitivity: "confidential" | "pii") {
+  return queryOptions({
     queryKey: queryKeys.exposure(sensitivity),
     queryFn: () => api.get<ExposurePathDto[]>(`/analysis/exposure${toQueryString({ sensitivity })}`),
   });
+}
+
+export function useExposure(sensitivity: "confidential" | "pii") {
+  return useQuery(exposureQueryOptions(sensitivity));
 }
 
 export function useExecutionTrace(id: string | undefined) {

@@ -1,13 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateSavedViewDto, SavedViewDto } from "@agentgraph/graph-schema";
 import { api } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 
+export const savedViewsQueryOptions = queryOptions({
+  queryKey: queryKeys.savedViews,
+  queryFn: () => api.get<SavedViewDto[]>("/views"),
+});
+
 export function useSavedViews() {
-  return useQuery({
-    queryKey: queryKeys.savedViews,
-    queryFn: () => api.get<SavedViewDto[]>("/views"),
-  });
+  return useQuery(savedViewsQueryOptions);
 }
 
 export function useCreateSavedView() {

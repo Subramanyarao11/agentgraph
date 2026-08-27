@@ -1,3 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/executions/")({});
+export const Route = createFileRoute("/executions/")({
+  head: () => ({ meta: [{ title: "Executions — AgentGraph" }] }),
+});

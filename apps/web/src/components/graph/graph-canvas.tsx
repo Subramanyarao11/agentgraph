@@ -8,7 +8,7 @@ import {
   type SimulationLinkDatum,
   type SimulationNodeDatum,
 } from "d3-force";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { GraphEdgeDto, GraphNodeDto } from "@agentgraph/graph-schema";
 import { NODE_DISPLAY, nodeName } from "@/lib/node-display";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -82,7 +82,14 @@ export function GraphCanvas({
   highlightId?: string;
   onNodeClick?: (node: GraphNodeDto) => void;
 }) {
-  const { nodes: positioned, edges: positionedEdges } = useMemo(() => layout(nodes, edges), [nodes, edges]);
+  // Callers frequently pass `data?.nodes ?? []` / freshly-mapped arrays, so a
+  // new array *reference* shows up on every render (including a `enabled`
+  // refetch that resolves to byte-identical data) even though the graph
+  // itself hasn't changed. Re-running the 260-tick force simulation on those
+  // renders is pure waste, so memoize on an id-based signature instead of
+  // object identity — same node/edge set skips the simulation entirely.
+  const signature = `${nodes.map((n) => n.id).join(",")}|${edges.map((e) => e.id).join(",")}`;
+  const { nodes: positioned, edges: positionedEdges } = useMemo(() => layout(nodes, edges), [signature]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   return (
@@ -90,7 +97,7 @@ export function GraphCanvas({
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="h-full w-full" role="img" aria-label="Graph visualization">
         <g strokeLinecap="round">
           {positionedEdges.map((e, i) => (
-            <motion.line
+            <m.line
               key={e.edge.id + i}
               x1={e.x1}
               y1={e.y1}
@@ -113,7 +120,7 @@ export function GraphCanvas({
             return (
               <Tooltip key={n.id}>
                 <TooltipTrigger asChild>
-                  <motion.g
+                  <m.g
                     initial={{ opacity: 0, scale: 0.4 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: 0.02 * i }}
@@ -141,7 +148,7 @@ export function GraphCanvas({
                     >
                       {truncate(nodeName(n.node.properties), 16)}
                     </text>
-                  </motion.g>
+                  </m.g>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="font-medium">{nodeName(n.node.properties)}</p>

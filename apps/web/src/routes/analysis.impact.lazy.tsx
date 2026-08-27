@@ -45,7 +45,9 @@ function ImpactPage() {
       <Card className="mb-4">
         <CardContent className="flex flex-wrap items-end gap-4 pt-5">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Failing component type</label>
+            <span id="failing-component-type-label" className="text-xs font-medium text-muted-foreground">
+              Failing component type
+            </span>
             <Tabs
               value={sourceLabel}
               onValueChange={(v) => {
@@ -53,7 +55,7 @@ function ImpactPage() {
                 setSelected(null);
               }}
             >
-              <TabsList>
+              <TabsList aria-labelledby="failing-component-type-label">
                 {SOURCE_LABELS.map((l) => (
                   <TabsTrigger key={l} value={l}>
                     {l}
@@ -64,13 +66,18 @@ function ImpactPage() {
           </div>
 
           <div className="w-64 space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">{sourceLabel}</label>
-            <NodePicker label={sourceLabel} value={selected} onSelect={setSelected} />
+            <label htmlFor="impact-node-picker" className="text-xs font-medium text-muted-foreground">
+              {sourceLabel}
+            </label>
+            <NodePicker id="impact-node-picker" label={sourceLabel} value={selected} onSelect={setSelected} />
           </div>
 
           <div className="w-48 space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Max hops: {maxHops}</label>
+            <label htmlFor="impact-max-hops" className="text-xs font-medium text-muted-foreground">
+              Max hops: {maxHops}
+            </label>
             <input
+              id="impact-max-hops"
               type="range"
               min={1}
               max={6}

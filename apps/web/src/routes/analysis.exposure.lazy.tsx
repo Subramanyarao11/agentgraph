@@ -31,7 +31,7 @@ function ExposurePage() {
       <Card className="mb-4">
         <CardContent className="pt-5">
           <Tabs value={sensitivity} onValueChange={(v) => setSensitivity(v as typeof sensitivity)}>
-            <TabsList>
+            <TabsList aria-label="Sensitivity level">
               <TabsTrigger value="pii">PII</TabsTrigger>
               <TabsTrigger value="confidential">Confidential</TabsTrigger>
             </TabsList>

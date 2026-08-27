@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 /**
  * The app's one motion language, in one place, so every page feels the same
@@ -24,7 +24,7 @@ export function FadeIn({
   className?: string;
   as?: Tag;
 }) {
-  const Component = motion[as];
+  const Component = m[as];
   return (
     <Component
       initial={{ opacity: 0, y: 8 }}
@@ -49,7 +49,7 @@ export function StaggerGroup({
   staggerDelay?: number;
   as?: Tag;
 }) {
-  const Component = motion[as];
+  const Component = m[as];
   return (
     <Component
       initial="hidden"
@@ -71,7 +71,7 @@ export function StaggerItem({
   className?: string;
   as?: Tag;
 }) {
-  const Component = motion[as];
+  const Component = m[as];
   return (
     <Component
       variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0 } }}

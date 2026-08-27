@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { MotionConfig } from "framer-motion";
+import { LazyMotion, MotionConfig, domAnimation } from "framer-motion";
 import { createQueryClient } from "@/lib/query-client";
 import { RouteErrorBoundary } from "@/components/route-error-boundary";
 import { RouteNotFound } from "@/components/route-not-found";
@@ -62,8 +62,14 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
-          {/* Honors the OS "reduce motion" setting — framer-motion swaps transforms for opacity-only. */}
-          <MotionConfig reducedMotion="user">{children}</MotionConfig>
+          {/* domAnimation is the smaller (~15KB vs ~35KB) framer-motion feature bundle —
+              covers every animation this app uses (opacity/transform, exit animations),
+              just not drag or layout-projection. `strict` throws if any component still
+              imports the full `motion` API instead of `m`, so this can't silently regress.
+              Honors the OS "reduce motion" setting: transforms fall back to opacity-only. */}
+          <LazyMotion features={domAnimation} strict>
+            <MotionConfig reducedMotion="user">{children}</MotionConfig>
+          </LazyMotion>
         </QueryClientProvider>
         <Scripts />
       </body>
