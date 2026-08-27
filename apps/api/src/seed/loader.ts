@@ -155,7 +155,9 @@ export async function loadSeedData(client: GraphClient, data: SeedData): Promise
 
 export async function resetGraph(client: GraphClient): Promise<void> {
   // Delete in batches so a large existing graph doesn't blow past a single transaction's memory.
-  let deleted = 0;
+  // No initializer: the loop body always runs at least once (do-while) and assigns `deleted`
+  // before the condition ever reads it, so an initial value here would be genuinely dead.
+  let deleted: number;
   do {
     const result = await client.writeQuery("MATCH (n) WITH n LIMIT 1000 DETACH DELETE n RETURN count(n) AS deleted");
     deleted = Number(result.records[0]?.get("deleted") ?? 0);

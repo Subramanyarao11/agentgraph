@@ -110,6 +110,9 @@ export function GraphCanvas({
   // renders is pure waste, so memoize on an id-based signature instead of
   // object identity — same node/edge set skips the simulation entirely.
   const signature = `${nodes.map((n) => n.id).join(",")}|${edges.map((e) => e.id).join(",")}`;
+  // Intentional: re-run only when the id-based signature changes, not on every
+  // new-but-equivalent nodes/edges array reference (see comment above).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const { nodes: positioned, edges: positionedLinks, width, height } = useMemo(() => layout(nodes, edges), [signature]);
 
   const svgRef = useRef<SVGSVGElement>(null);

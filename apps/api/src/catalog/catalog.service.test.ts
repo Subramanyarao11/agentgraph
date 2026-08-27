@@ -4,7 +4,7 @@ import { CatalogService } from "./catalog.service";
 import type { GraphService } from "../graph/graph.service";
 
 function fakeGraphService(itemNodes: unknown[], total: number) {
-  const readQuery = vi.fn(async (cypher: string, params?: unknown) => {
+  const readQuery = vi.fn(async (cypher: string, _params?: unknown) => {
     if (cypher.includes("count(n)")) {
       return { records: [{ get: () => neo4j.int(total) }] };
     }

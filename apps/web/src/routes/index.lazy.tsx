@@ -9,7 +9,6 @@ import { ListSkeleton } from "@/components/skeletons";
 import { FadeIn, StaggerGroup, StaggerItem } from "@/components/motion";
 import { useCatalogList } from "@/hooks/use-catalog";
 import { useExposure } from "@/hooks/use-analysis";
-import { nodeName } from "@/lib/node-display";
 
 export const Route = createLazyFileRoute("/")({
   component: Dashboard,
