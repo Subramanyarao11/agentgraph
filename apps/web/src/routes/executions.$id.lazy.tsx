@@ -66,7 +66,7 @@ function ExecutionTracePage() {
                 <Link
                   to="/catalog/$label/$id"
                   params={{ label: "Agent", id: String(query.data.triggeredBy.properties.id) }}
-                  className="flex items-center gap-2 text-sm font-medium hover:underline"
+                  className="flex items-center gap-2 text-sm font-medium hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 >
                   <NODE_DISPLAY.Agent.icon className="h-4 w-4 text-primary" aria-hidden="true" />
                   {nodeName(query.data.triggeredBy.properties)}
@@ -83,7 +83,7 @@ function ExecutionTracePage() {
                 <Link
                   to="/catalog/$label/$id"
                   params={{ label: "Workflow", id: String(query.data.workflow.properties.id) }}
-                  className="flex items-center gap-2 text-sm font-medium hover:underline"
+                  className="flex items-center gap-2 text-sm font-medium hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 >
                   <NODE_DISPLAY.Workflow.icon className="h-4 w-4 text-emerald-500" aria-hidden="true" />
                   {nodeName(query.data.workflow.properties)}
@@ -107,7 +107,7 @@ function ExecutionTracePage() {
                       <Link
                         to="/catalog/$label/$id"
                         params={{ label: "Dataset", id: String(t.dataset?.properties.id) }}
-                        className="flex items-center gap-2 hover:underline"
+                        className="flex items-center gap-2 hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                       >
                         <NODE_DISPLAY.Dataset.icon className="h-3.5 w-3.5 text-rose-500" aria-hidden="true" />
                         {t.dataset ? nodeName(t.dataset.properties) : "Unknown"}

@@ -145,7 +145,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={openCommandPalette}
-          className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-secondary"
+          className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
         >
           <Search className="h-3.5 w-3.5" />
           Search…
@@ -168,9 +168,9 @@ export function Sidebar() {
                   activeOptions={{ exact: item.to === "/" }}
                   onMouseEnter={() => item.prefetch?.(queryClient)}
                   className={cn(
-                    "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                    "flex items-center gap-2.5 rounded-md border-l-2 border-transparent py-1.5 pl-2 pr-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card",
                   )}
-                  activeProps={{ className: "!bg-accent !text-accent-foreground font-medium" }}
+                  activeProps={{ className: "!border-primary !bg-accent !text-accent-foreground font-medium" }}
                 >
                   <item.icon className="h-4 w-4" aria-hidden="true" />
                   {item.label}

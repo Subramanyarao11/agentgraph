@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { useHealth } from "@/hooks/use-health";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -37,6 +38,16 @@ export function HealthIndicator() {
               <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
             )}
             {label}
+            <span
+              aria-hidden="true"
+              className="animate-pulse-dot h-1.5 w-1.5 rounded-full"
+              style={
+                {
+                  backgroundColor: allUp ? "hsl(var(--success))" : "hsl(var(--destructive))",
+                  "--pulse-color": allUp ? "var(--success)" : "var(--destructive)",
+                } as CSSProperties
+              }
+            />
           </span>
         </TooltipTrigger>
         <TooltipContent>

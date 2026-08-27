@@ -92,12 +92,12 @@ function LeaderboardPage() {
                     {status.data.result.map((pair, i) => (
                       <StaggerItem as="tr" key={i} className="border-b border-border transition-colors hover:bg-secondary/40">
                         <TableCell>
-                          <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(pair.agentA.properties.id) }} className="hover:underline">
+                          <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(pair.agentA.properties.id) }} className="hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1">
                             {nodeName(pair.agentA.properties)}
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(pair.agentB.properties.id) }} className="hover:underline">
+                          <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(pair.agentB.properties.id) }} className="hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1">
                             {nodeName(pair.agentB.properties)}
                           </Link>
                         </TableCell>

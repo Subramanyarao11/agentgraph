@@ -113,7 +113,7 @@ export function NodePicker({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.12 }}
-            className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-md"
+            className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-border bg-popover shadow-elevated"
           >
             {results.isLoading ? (
               <div className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">

@@ -125,7 +125,7 @@ function ImpactPage() {
                             <Link
                               to="/catalog/$label/$id"
                               params={{ label: a.node.label, id: String(a.node.properties.id) }}
-                              className="flex items-center gap-2 hover:underline"
+                              className="flex items-center gap-2 hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                             >
                               <display.icon className={`h-3.5 w-3.5 ${display.color}`} />
                               {nodeName(a.node.properties)}

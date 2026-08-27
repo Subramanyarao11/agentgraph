@@ -61,12 +61,12 @@ function ExposurePage() {
               {query.data?.map((p, i) => (
                 <StaggerItem as="tr" key={`${p.agent.id}-${p.dataset.id}-${i}`} className="border-b border-border transition-colors hover:bg-secondary/40">
                   <TableCell>
-                    <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(p.agent.properties.id) }} className="font-medium hover:underline">
+                    <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(p.agent.properties.id) }} className="font-medium hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1">
                       {nodeName(p.agent.properties)}
                     </Link>
                   </TableCell>
                   <TableCell>
-                    <Link to="/catalog/$label/$id" params={{ label: "Dataset", id: String(p.dataset.properties.id) }} className="hover:underline">
+                    <Link to="/catalog/$label/$id" params={{ label: "Dataset", id: String(p.dataset.properties.id) }} className="hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1">
                       {nodeName(p.dataset.properties)}
                     </Link>
                   </TableCell>

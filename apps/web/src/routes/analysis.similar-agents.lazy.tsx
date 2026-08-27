@@ -62,7 +62,7 @@ function SimilarAgentsPage() {
                     <CardHeader className="flex-row items-center justify-between space-y-0">
                       <div>
                         <CardTitle>
-                          <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(result.agent.properties.id) }} className="hover:underline">
+                          <Link to="/catalog/$label/$id" params={{ label: "Agent", id: String(result.agent.properties.id) }} className="hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1">
                             {nodeName(result.agent.properties)}
                           </Link>
                         </CardTitle>

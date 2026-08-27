@@ -69,7 +69,7 @@ function Dashboard() {
                       <Link
                         to="/executions/$id"
                         params={{ id: String(exec.properties.id) }}
-                        className="flex items-center justify-between py-2.5 text-sm transition-colors hover:bg-secondary/40"
+                        className="flex items-center justify-between rounded-md px-1.5 py-2.5 text-sm transition-colors hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                       >
                         <span className="font-mono text-xs text-muted-foreground">
                           {String(exec.properties.id).slice(0, 8)}

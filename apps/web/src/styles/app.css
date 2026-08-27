@@ -25,6 +25,8 @@
   --input: 220 16% 90%;
   --ring: 243 75% 59%;
   --radius: 0.75rem;
+  --shadow-card-raw: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.03);
+  --shadow-elevated-raw: 0 12px 32px -8px rgb(15 23 42 / 0.12), 0 4px 10px -4px rgb(15 23 42 / 0.06);
 }
 
 /* System preference, unless the user explicitly chose light via the toggle. */
@@ -51,6 +53,11 @@
     --border: 222 25% 18%;
     --input: 222 25% 18%;
     --ring: 243 82% 70%;
+    /* Cast shadows barely read against a dark background, so dark-mode "elevation" leans on
+       a faint inset top highlight (light catching the card's top edge) plus a heavier, more
+       diffuse cast shadow than light mode needs — not just a darker copy of the light values. */
+    --shadow-card-raw: inset 0 1px 0 0 rgb(255 255 255 / 0.035), 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-elevated-raw: inset 0 1px 0 0 rgb(255 255 255 / 0.05), 0 16px 40px -12px rgb(0 0 0 / 0.55);
   }
 }
 
@@ -77,6 +84,8 @@
   --border: 222 25% 18%;
   --input: 222 25% 18%;
   --ring: 243 82% 70%;
+  --shadow-card-raw: inset 0 1px 0 0 rgb(255 255 255 / 0.035), 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-elevated-raw: inset 0 1px 0 0 rgb(255 255 255 / 0.05), 0 16px 40px -12px rgb(0 0 0 / 0.55);
 }
 
 @theme inline {
@@ -104,6 +113,8 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 0.25rem);
   --radius-sm: calc(var(--radius) - 0.5rem);
+  --shadow-card: var(--shadow-card-raw);
+  --shadow-elevated: var(--shadow-elevated-raw);
   --font-sans:
     "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono:
@@ -143,6 +154,28 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-shimmer {
+    animation: none;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 hsl(var(--pulse-color) / 0.35);
+  }
+  50% {
+    opacity: 0.85;
+    box-shadow: 0 0 0 4px hsl(var(--pulse-color) / 0);
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-dot {
     animation: none;
   }
 }
