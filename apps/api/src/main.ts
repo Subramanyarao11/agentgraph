@@ -17,12 +17,9 @@ async function bootstrap() {
 
   const graph = app.get(GraphService);
   if (graph.isConnected()) {
-    try {
-      await applyGraphSchema(graph.client);
-      logger.log("Graph constraints/indexes ensured");
-    } catch (err) {
-      logger.warn(`Could not apply graph constraints (continuing): ${err instanceof Error ? err.message : err}`);
-    }
+    const { applied, failed } = await applyGraphSchema(graph.client);
+    logger.log(`Graph constraints/indexes: ${applied.length} applied, ${failed.length} failed`);
+    for (const f of failed) logger.warn(`Skipped (unsupported?): ${f.statement} — ${f.message}`);
   }
 
   await app.listen(config.port);

@@ -23,8 +23,33 @@ const INDEXES: string[] = [
   "CREATE INDEX execution_status IF NOT EXISTS FOR (n:Execution) ON (n.status)",
 ];
 
-export async function applyGraphSchema(client: GraphClient): Promise<void> {
+export interface ApplyGraphSchemaResult {
+  applied: string[];
+  failed: Array<{ statement: string; message: string }>;
+}
+
+/**
+ * Applies each constraint/index statement independently and keeps going on
+ * failure. `CREATE CONSTRAINT ... FOR ... REQUIRE ... IS UNIQUE` is Neo4j's
+ * DDL syntax, not part of openCypher proper — CognoDB documents Bolt/Cypher
+ * query compatibility but doesn't document DDL support, so this can't be
+ * assumed. If it's unsupported the app still works correctly (constraints
+ * only add uniqueness enforcement + index-backed lookups, which the demo's
+ * small dataset doesn't depend on for correctness) — callers should log
+ * `result.failed` as a warning, never treat it as fatal.
+ */
+export async function applyGraphSchema(client: GraphClient): Promise<ApplyGraphSchemaResult> {
+  const applied: string[] = [];
+  const failed: ApplyGraphSchemaResult["failed"] = [];
+
   for (const statement of [...CONSTRAINTS, ...INDEXES]) {
-    await client.writeQuery(statement);
+    try {
+      await client.writeQuery(statement);
+      applied.push(statement);
+    } catch (err) {
+      failed.push({ statement, message: err instanceof Error ? err.message : String(err) });
+    }
   }
+
+  return { applied, failed };
 }

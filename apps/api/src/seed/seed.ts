@@ -16,8 +16,16 @@ async function main() {
   await client.verifyConnectivity();
   console.log("Connected.");
 
-  await applyGraphSchema(client);
-  console.log("Constraints/indexes ensured.");
+  const { applied, failed } = await applyGraphSchema(client);
+  console.log(`Constraints/indexes: ${applied.length} applied, ${failed.length} failed.`);
+  if (failed.length > 0) {
+    console.warn(
+      "Some constraint/index statements were rejected — this is expected if the target database doesn't " +
+        "support Neo4j's constraint DDL (CognoDB documents Bolt/Cypher query compatibility but not DDL). " +
+        "Continuing without them; the app works correctly either way, just without index-backed lookups.",
+    );
+    for (const f of failed) console.warn(`  - ${f.statement}\n    ${f.message}`);
+  }
 
   if (shouldReset) {
     console.log("Resetting graph (--reset passed) ...");
