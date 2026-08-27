@@ -58,8 +58,13 @@ services:
     plan: free
     dockerfilePath: ./apps/web/Dockerfile
     dockerContext: .
-    dockerBuildArgs:
-      VITE_API_URL: https://agentgraph-api.onrender.com
     envVars:
       - key: NODE_ENV
         value: production
+      # Render auto-injects a Docker-runtime service's envVars as build args
+      # for any matching `ARG` in its Dockerfile — apps/web/Dockerfile
+      # declares `ARG VITE_API_URL`, so this reaches the build, not just the
+      # running container (which is what Vite needs, since it inlines
+      # import.meta.env.VITE_API_URL at build time).
+      - key: VITE_API_URL
+        value: https://agentgraph-api.onrender.com

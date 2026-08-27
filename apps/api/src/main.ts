@@ -15,6 +15,13 @@ async function bootstrap() {
   app.enableCors({ origin: config.corsOrigin, credentials: true });
   app.useGlobalFilters(new GraphExceptionFilter());
 
+  // Module lifecycle hooks (GraphService.onModuleInit, which sets up the
+  // connectivity flag applyGraphSchema depends on below) don't actually run
+  // until init() — NestFactory.create() alone doesn't trigger them. Without
+  // this, isConnected() below always reads its pre-init default and every
+  // schema-application attempt silently no-ops.
+  await app.init();
+
   const graph = app.get(GraphService);
   if (graph.isConnected()) {
     const { applied, failed } = await applyGraphSchema(graph.client);

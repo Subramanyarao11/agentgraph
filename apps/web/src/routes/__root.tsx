@@ -43,6 +43,13 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Runs before paint so there's no flash of the wrong theme on load —
+            React never sees this attribute, hence suppressHydrationWarning above. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>

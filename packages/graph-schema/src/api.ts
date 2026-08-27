@@ -141,3 +141,15 @@ export const JobStatusDto = z.object({
   failedReason: z.string().nullable(),
 });
 export type JobStatusDto = z.infer<typeof JobStatusDto>;
+
+/** Global full-text search (⌘K) — backed by CognoDB's fulltext index support. */
+export const SearchQuery = z.object({
+  q: z.string().trim().min(1).max(120),
+});
+export type SearchQuery = z.infer<typeof SearchQuery>;
+
+export const SearchResultDto = z.object({
+  node: GraphNodeDto,
+  score: z.number(),
+});
+export type SearchResultDto = z.infer<typeof SearchResultDto>;

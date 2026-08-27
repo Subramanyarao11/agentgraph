@@ -1,5 +1,7 @@
 # AgentGraph
 
+[![CI](https://github.com/Subramanyarao11/agentgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/Subramanyarao11/agentgraph/actions/workflows/ci.yml)
+
 **Agentic workflow impact & lineage intelligence — backed by [CognoDB](https://console.cognodb.com), a managed graph database.**
 
 AgentGraph models a company's AI agents, the tools they call (Slack, Jira, Salesforce, internal APIs, …), the multi-step workflows those agents run, and the datasets that flow through them — as a graph. It answers the questions that actually matter once an org has more than a handful of automations running: *if this integration goes down, what breaks? Which agents can reach PII, however indirectly? What's this agent's real data lineage?*
@@ -15,6 +17,7 @@ AgentGraph models a company's AI agents, the tools they call (Slack, Jira, Sales
 - [Architecture](#architecture)
 - [Setup](#setup)
 - [The queries, explained](#the-queries-explained)
+- [Testing & CI](#testing--ci)
 - [Project structure](#project-structure)
 - [Screenshots](#screenshots)
 
@@ -134,10 +137,11 @@ No code changes — `pnpm seed && pnpm dev` again. The official `neo4j-driver` (
 | `pnpm seed:reset` | Wipes the graph first, then reseeds |
 | `pnpm build` | Builds every app/package |
 | `pnpm typecheck` | Type-checks the whole monorepo |
+| `pnpm test` | Runs unit tests across the monorepo |
 
 ## The queries, explained
 
-All Cypher lives in [`apps/api/src/analysis/analysis.queries.ts`](./apps/api/src/analysis/analysis.queries.ts).
+All Cypher lives in one place — [`packages/graph-schema/src/cypher.ts`](./packages/graph-schema/src/cypher.ts) — shared by the API (which executes it) and the web app (which renders it verbatim in a "Show query" panel on every analysis page, so what you see on screen can't drift from what actually ran).
 
 **1. Impact analysis (multi-hop, variable length)** — `/analysis/impact?nodeId=&maxHops=`
 ```cypher
@@ -174,6 +178,30 @@ Every agent that can transitively reach PII/confidential data, with the shortest
 
 **5. Execution trace** — `/analysis/executions/:id/trace` — which agent triggered a run, which workflow it ran, and which datasets it touched, with read/write access.
 
+**6. Global full-text search** (⌘K) — `/search?q=`
+```cypher
+CALL db.index.fulltext.queryNodes("agentgraphSearch", $term + "*")
+YIELD node, score
+RETURN node, score ORDER BY score DESC LIMIT 10
+```
+Search terms are escaped against Lucene's special-character syntax before being passed as a parameter (see `escapeLuceneTerm` in [`apps/api/src/search/search.service.ts`](./apps/api/src/search/search.service.ts)) — this is the one CognoDB headline feature (fulltext indexing) the rest of the app doesn't otherwise exercise.
+
+## Testing & CI
+
+```bash
+pnpm test          # unit tests across the monorepo (turbo run test)
+```
+
+Tests are unit-level and DB-free by design — no live Neo4j/CognoDB, Postgres, or Redis needed to run them, which keeps CI fast and makes them safe to run against either backend without provisioning anything:
+
+- [`packages/graph-client/src/mapping.test.ts`](./packages/graph-client/src/mapping.test.ts) — Bolt Integer/Node/Relationship/Path → DTO mapping, built against real `neo4j-driver` fixture objects (`new neo4j.Node(...)`, `new neo4j.Path(...)`), not hand-rolled mocks of the driver's shape.
+- [`packages/graph-client/src/schema.test.ts`](./packages/graph-client/src/schema.test.ts) — verifies `applyGraphSchema` keeps applying remaining constraints/indexes after one is rejected, instead of throwing (the CognoDB-DDL-compatibility safety net described above).
+- [`apps/api/src/catalog/catalog.service.test.ts`](./apps/api/src/catalog/catalog.service.test.ts) — asserts `limit`/`offset` are sent as Bolt Integers, not floats (the exact bug this caught during development — Neo4j's `SKIP`/`LIMIT` reject `'2.0'`).
+- [`apps/api/src/search/search.service.test.ts`](./apps/api/src/search/search.service.test.ts) — Lucene special-character escaping.
+- [`apps/api/src/common/pipes/zod-validation.pipe.test.ts`](./apps/api/src/common/pipes/zod-validation.pipe.test.ts) — coercion, defaults, and rejection behavior at the request-validation boundary.
+
+GitHub Actions ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)) runs `typecheck` → `build` → `test` on every push and PR to `main`.
+
 ## Project structure
 
 ```
@@ -186,17 +214,20 @@ graphdb/
 │   │       ├── graph/        GraphService — GraphClient lifecycle, health
 │   │       ├── jobs/         BullMQ: async similarity leaderboard
 │   │       ├── views/        Postgres/TypeORM: saved analysis views
+│   │       ├── search/       full-text search (⌘K), CognoDB's fulltext index
 │   │       ├── health/       aggregate graph+postgres+redis health
 │   │       ├── config/       Zod-validated env config
 │   │       └── seed/         seed data generator + batched graph loader
 │   └── web/                  TanStack Start frontend
 │       └── src/
 │           ├── routes/       one file per page (file-based routing)
-│           ├── components/   ui/ (shadcn primitives), graph/ (force-directed SVG viz), layout/
+│           ├── components/   ui/ (shadcn primitives), graph/ (force-directed SVG viz), layout/,
+│           │                 command-palette.tsx (⌘K), cypher-panel.tsx ("Show query")
 │           └── hooks/        TanStack Query hooks, one per API area
 ├── packages/
-│   ├── graph-schema/         Zod schemas + TS types (the domain model)
+│   ├── graph-schema/         Zod schemas + TS types (the domain model) + cypher.ts (shared queries)
 │   └── graph-client/         neo4j-driver wrapper — the only file importing it directly
+├── .github/workflows/ci.yml  typecheck → build → test on every push/PR
 └── docker-compose.yml        local Neo4j + Postgres + Redis
 ```
 
@@ -206,7 +237,8 @@ graphdb/
 |---|---|
 | ![Dashboard](docs/screenshots/dashboard.jpg) Dashboard | ![Sensitive-data exposure](docs/screenshots/sensitive-data-exposure.jpg) Sensitive-data exposure |
 | ![Similar agents](docs/screenshots/similar-agents.jpg) Similar agents | ![Similarity leaderboard](docs/screenshots/similarity-leaderboard.jpg) Similarity leaderboard (async job) |
-| ![Node detail with 1-hop neighborhood graph](docs/screenshots/node-detail-graph.png) Node detail — 1-hop neighborhood graph | |
+| ![Node detail with 1-hop neighborhood graph](docs/screenshots/node-detail-graph.png) Node detail — 1-hop neighborhood graph | ![Global full-text search](docs/screenshots/global-search.jpg) Global full-text search (⌘K) |
+| ![Show-query panel in dark mode](docs/screenshots/cypher-panel-dark-mode.jpg) "Show query" panel, dark mode | |
 
 ## Deploying (Render)
 
@@ -215,7 +247,7 @@ graphdb/
 1. Push this repo to GitHub (already done if you're reading this on GitHub).
 2. In the [Render dashboard](https://dashboard.render.com), **New → Blueprint**, select this repo.
 3. Render will prompt for the values marked `sync: false` in `render.yaml`: `GRAPH_URI` and `GRAPH_PASSWORD` from your CognoDB Cloud instance (see [Setup](#setup) above).
-4. Deploy. Once both services are up, check the actual assigned URLs — if they differ from `agentgraph-api.onrender.com` / `agentgraph-web.onrender.com` (Render service names are globally unique, so a generic name may already be taken), update `CORS_ORIGIN` on the API service and `VITE_API_URL` under the web service's Docker build args, then trigger a redeploy of both.
+4. Deploy. Once both services are up, check the actual assigned URLs — if they differ from `agentgraph-api.onrender.com` / `agentgraph-web.onrender.com` (Render service names are globally unique, so a generic name may already be taken), update the `CORS_ORIGIN` env var on the API service and the `VITE_API_URL` env var on the web service (Render auto-passes it through as a Docker build arg — see the comment in `render.yaml`), then trigger a redeploy of both.
 5. Run the seed script once against the deployed CognoDB instance (`pnpm seed`, with your local `.env` pointed at the same CognoDB URI) so the hosted demo has data.
 
 ## Demo

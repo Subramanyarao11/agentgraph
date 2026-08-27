@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   PlayCircle,
   Radar,
+  Search,
   ShieldAlert,
   Sparkles,
   Trophy,
@@ -16,6 +17,7 @@ import {
   Wrench,
   Waypoints,
 } from "lucide-react";
+import { CommandPalette, openCommandPalette } from "@/components/command-palette";
 import { cn } from "@/lib/utils";
 
 type LinkProps = ComponentProps<typeof Link>;
@@ -73,6 +75,18 @@ export function Sidebar() {
         </div>
         <span className="text-sm font-semibold tracking-tight">AgentGraph</span>
       </div>
+      <div className="px-3 pt-3">
+        <button
+          type="button"
+          onClick={openCommandPalette}
+          className="flex w-full items-center gap-2 rounded-md border border-border bg-background px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-secondary"
+        >
+          <Search className="h-3.5 w-3.5" />
+          Search…
+          <kbd className="ml-auto rounded border border-border px-1 text-[10px]">⌘K</kbd>
+        </button>
+      </div>
+      <CommandPalette />
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>

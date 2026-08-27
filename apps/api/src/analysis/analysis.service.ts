@@ -1,13 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import type {
-  ExposurePathDto,
-  GraphResultDto,
-  SimilarAgentResultDto,
-  SimilarityPairDto,
-} from "@agentgraph/graph-schema";
-import { cypherInt, pathsToGraphResult, toGraphNodeDto, unwrapValue } from "@agentgraph/graph-client";
-import type { Node as Neo4jNode, Path } from "neo4j-driver";
-import { GraphService } from "../graph/graph.service";
 import {
   EXECUTION_TRACE_QUERY,
   LINEAGE_PATH_QUERY,
@@ -16,7 +7,14 @@ import {
   exposureQuery,
   impactListQuery,
   impactPathsQuery,
-} from "./analysis.queries";
+  type ExposurePathDto,
+  type GraphResultDto,
+  type SimilarAgentResultDto,
+  type SimilarityPairDto,
+} from "@agentgraph/graph-schema";
+import { cypherInt, pathsToGraphResult, toGraphNodeDto, unwrapValue } from "@agentgraph/graph-client";
+import type { Node as Neo4jNode, Path } from "neo4j-driver";
+import { GraphService } from "../graph/graph.service";
 
 export interface AffectedNode {
   node: ReturnType<typeof toGraphNodeDto>;

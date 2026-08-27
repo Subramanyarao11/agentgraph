@@ -1,16 +1,18 @@
 /**
  * The Cypher for every "interesting" graph query in the app, kept in one
- * place so they're easy to read and explain independent of the service
- * plumbing around them.
+ * place — shared between the API (which executes these) and the web app
+ * (which displays them verbatim in each analysis page's "Show query" panel,
+ * so what a reviewer sees on screen is never a stale copy of what actually
+ * ran).
  *
  * A note on `maxHops`: Cypher does not support parameterizing the bounds of
  * a variable-length relationship pattern (`*1..N` must be literal integers —
  * this is a documented Neo4j/openCypher limitation, not a stylistic choice).
  * Every value interpolated below is first validated by Zod as an integer in
- * [1, 6] (see ImpactAnalysisQuery/LineageQuery in @agentgraph/graph-schema)
- * before it reaches these functions, so this is safe range-checked
- * interpolation, not string-concatenated user input. Every actual data
- * value (ids, sensitivity, search terms, limits) goes through `$params`.
+ * [1, 6] (see ImpactAnalysisQuery/LineageQuery below) before it reaches
+ * these functions, so this is safe range-checked interpolation, not
+ * string-concatenated user input. Every actual data value (ids, sensitivity,
+ * search terms, limits) goes through `$params`.
  */
 
 const IMPACT_RELS = "USES_TOOL|EXECUTES|HAS_STEP|CALLS_TOOL|DEPENDS_ON|NEXT";
@@ -105,3 +107,23 @@ export const SIMILARITY_LEADERBOARD_QUERY = `
   ORDER BY sharedTools DESC
   LIMIT 50
 `;
+
+/** Full-text search across every searchable node label (see the fulltext index created in schema.ts). */
+export const FULLTEXT_SEARCH_QUERY = `
+  CALL db.index.fulltext.queryNodes("agentgraphSearch", $term + "*")
+  YIELD node, score
+  RETURN node, score
+  ORDER BY score DESC
+  LIMIT 10
+`;
+
+export type AnalysisQueryKey = "impact" | "lineage" | "similarAgents" | "exposure";
+
+/** One-line, human-readable blurb per analysis query, for the frontend's "Show query" panel. */
+export const CYPHER_EXPLAINERS: Record<AnalysisQueryKey, string> = {
+  impact:
+    "Variable-length traversal (1..N hops) outward from the failing node, following every relationship type an outage could realistically propagate through.",
+  lineage: "Fixed 4-hop pattern match: Dataset back through Tool, Step, and Workflow to the responsible Agent.",
+  similarAgents: "Self-join through the USES_TOOL bridge, aggregated and normalized into a Jaccard-style score.",
+  exposure: "shortestPath() between every Agent and every Dataset of a given sensitivity, ordered by hop count.",
+};

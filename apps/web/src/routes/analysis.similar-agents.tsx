@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
-import type { GraphNodeDto } from "@agentgraph/graph-schema";
+import { CYPHER_EXPLAINERS, SIMILAR_AGENTS_QUERY, type GraphNodeDto } from "@agentgraph/graph-schema";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
 import { NodePicker } from "@/components/node-picker";
+import { CypherPanel } from "@/components/cypher-panel";
 import { SaveViewButton } from "@/components/save-view-button";
 import { useSimilarAgents } from "@/hooks/use-analysis";
 import { nodeName } from "@/lib/node-display";
@@ -50,7 +51,9 @@ function SimilarAgentsPage() {
       ) : query.data?.length === 0 ? (
         <EmptyState icon={Sparkles} title="No similar agents" description="No other agent shares a tool with this one yet." />
       ) : (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="space-y-4">
+          <CypherPanel explainer={CYPHER_EXPLAINERS.similarAgents} cypher={SIMILAR_AGENTS_QUERY} params={{ agentId, limit: 8 }} />
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {query.data?.map((result) => (
             <Card key={result.agent.id}>
               <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -79,6 +82,7 @@ function SimilarAgentsPage() {
               </CardContent>
             </Card>
           ))}
+          </div>
         </div>
       )}
     </AppShell>

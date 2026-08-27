@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Radar } from "lucide-react";
-import type { GraphNodeDto, NodeLabel } from "@agentgraph/graph-schema";
+import { CYPHER_EXPLAINERS, impactListQuery, type GraphNodeDto, type NodeLabel } from "@agentgraph/graph-schema";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,6 +12,7 @@ import { ErrorState } from "@/components/error-state";
 import { NodePicker } from "@/components/node-picker";
 import { GraphCanvas } from "@/components/graph/graph-canvas";
 import { GraphLegend } from "@/components/graph/graph-legend";
+import { CypherPanel } from "@/components/cypher-panel";
 import { SaveViewButton } from "@/components/save-view-button";
 import { useImpact } from "@/hooks/use-analysis";
 import { NODE_DISPLAY, nodeName } from "@/lib/node-display";
@@ -91,7 +92,13 @@ function ImpactPage() {
       ) : query.isError ? (
         <ErrorState error={query.error} onRetry={() => query.refetch()} />
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="space-y-4">
+          <CypherPanel
+            explainer={CYPHER_EXPLAINERS.impact}
+            cypher={impactListQuery(maxHops)}
+            params={{ nodeId, maxHops }}
+          />
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-1">
             <CardHeader>
               <CardTitle>Affected ({query.data?.affected.length ?? 0})</CardTitle>
@@ -137,6 +144,7 @@ function ImpactPage() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
       )}
     </AppShell>

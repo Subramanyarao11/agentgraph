@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShieldAlert } from "lucide-react";
+import { CYPHER_EXPLAINERS, exposureQuery } from "@agentgraph/graph-schema";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
+import { CypherPanel } from "@/components/cypher-panel";
 import { useExposure } from "@/hooks/use-analysis";
 import { NODE_DISPLAY, nodeName } from "@/lib/node-display";
 
@@ -47,6 +49,8 @@ function ExposurePage() {
       ) : query.data?.length === 0 ? (
         <EmptyState icon={ShieldAlert} title="No exposure found" description={`No agent can currently reach ${sensitivity} data.`} />
       ) : (
+        <div className="space-y-4">
+        <CypherPanel explainer={CYPHER_EXPLAINERS.exposure} cypher={exposureQuery(6)} params={{ sensitivity }} />
         <Table>
           <TableHeader>
             <TableRow>
@@ -88,6 +92,7 @@ function ExposurePage() {
             ))}
           </TableBody>
         </Table>
+        </div>
       )}
     </AppShell>
   );

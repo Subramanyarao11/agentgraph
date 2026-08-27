@@ -27,7 +27,35 @@
   --radius: 0.75rem;
 }
 
-[data-theme="dark"] {
+/* System preference, unless the user explicitly chose light via the toggle. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: 222 47% 7%;
+    --foreground: 210 20% 96%;
+    --card: 222 40% 10%;
+    --card-foreground: 210 20% 96%;
+    --popover: 222 40% 10%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 243 82% 70%;
+    --primary-foreground: 222 47% 7%;
+    --secondary: 222 30% 15%;
+    --secondary-foreground: 210 20% 96%;
+    --muted: 222 30% 15%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 243 40% 20%;
+    --accent-foreground: 243 82% 80%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 55% 45%;
+    --warning: 32 90% 55%;
+    --border: 222 25% 18%;
+    --input: 222 25% 18%;
+    --ring: 243 82% 70%;
+  }
+}
+
+/* Explicit toggle choice — wins in both directions regardless of system preference. */
+:root[data-theme="dark"] {
   --background: 222 47% 7%;
   --foreground: 210 20% 96%;
   --card: 222 40% 10%;

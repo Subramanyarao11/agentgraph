@@ -11,6 +11,7 @@ import { GraphModule } from "./graph/graph.module";
 import { HealthModule } from "./health/health.module";
 import { JobsModule } from "./jobs/jobs.module";
 import { RedisModule } from "./redis/redis.module";
+import { SearchModule } from "./search/search.module";
 import { SavedViewEntity } from "./views/saved-view.entity";
 import { ViewsModule } from "./views/views.module";
 
@@ -46,6 +47,7 @@ import { ViewsModule } from "./views/views.module";
     AnalysisModule,
     JobsModule,
     ViewsModule,
+    SearchModule,
   ],
 })
 export class AppModule {}

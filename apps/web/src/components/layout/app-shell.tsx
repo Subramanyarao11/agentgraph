@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
 import { HealthIndicator } from "./health-indicator";
+import { ThemeToggle } from "./theme-toggle";
 
 export function AppShell({
   title,
@@ -25,6 +26,7 @@ export function AppShell({
           <div className="flex items-center gap-3">
             {actions}
             <HealthIndicator />
+            <ThemeToggle />
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">{children}</main>

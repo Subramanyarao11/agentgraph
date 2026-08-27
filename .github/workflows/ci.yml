@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      # No live database in CI — every test here is a unit test against a
+      # mocked GraphService/GraphClient (see packages/graph-client/src/*.test.ts
+      # and apps/api/src/**/*.test.ts). End-to-end verification against a
+      # real graph runs locally / in the demo deployment instead.
+      - name: Test
+        run: pnpm test
