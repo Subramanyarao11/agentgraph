@@ -8,7 +8,8 @@
     "build": "vite build",
     "start": "node .output/server/index.mjs",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "routes:generate": "tsr generate",
+    "typecheck": "tsr generate && tsc --noEmit"
   },
   "dependencies": {
     "@agentgraph/graph-schema": "workspace:*",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
+    "@tanstack/router-cli": "1.167.33",
     "@types/d3-force": "^3.0.10",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
