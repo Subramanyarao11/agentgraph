@@ -15,6 +15,7 @@ AgentGraph models a company's AI agents, the tools they call (Slack, Jira, Sales
 - [Why a graph database?](#why-a-graph-database)
 - [The data model](#the-data-model)
 - [Architecture](#architecture)
+- [Observability](#observability)
 - [Setup](#setup)
 - [The queries, explained](#the-queries-explained)
 - [Frontend engineering](#frontend-engineering)
@@ -86,6 +87,17 @@ packages/
 - Every Cypher query is parameterized (`$param`) via the official `neo4j-driver`; see [`apps/api/src/analysis/analysis.queries.ts`](./apps/api/src/analysis/analysis.queries.ts) for the one documented exception (variable-length hop *bounds*, which Cypher requires as literal integers — Zod-validated to a `[1,6]` integer range before interpolation, never raw user input).
 - `GraphExceptionFilter` maps an unreachable database to a `503` and a failed query to a `500`, instead of the API crashing or leaking a stack trace — the frontend shows a clear "couldn't load this" state either way.
 - Zod schemas double as request-DTO validation (`ZodValidationPipe`) *and* the frontend's type source — one schema, no drift between what the API accepts and what the UI sends.
+
+## Observability
+
+Every request and every Cypher query is timed and correlated — visible live in the app at **Observability** in the sidebar, no external agent or collector to run:
+
+- **`GraphClient.readQuery`/`writeQuery`** (`packages/graph-client/src/client.ts`) take an optional `name` — every call site in `analysis.service.ts`, `catalog.service.ts`, and `search.service.ts` passes one (`"impactList"`, `"catalogDetail"`, `"fulltextSearch"`, …) — and emit a `{ name, mode, durationMs, ok }` event through an `onQuery` hook after every execution, success or failure.
+- **`RequestTracingInterceptor`** (global, `apps/api/src/common/interceptors/request-tracing.interceptor.ts`) times every HTTP request, tags it with a correlation ID (returned as `x-request-id`, echoing one the caller sent), and threads that ID through `AsyncLocalStorage` for the request's lifetime. `GraphService` wires its `onQuery` hook to read the current ID, so a slow query in the log can be traced back to the exact request that ran it.
+- **`ObservabilityService`** keeps a bounded in-memory rolling window (500 entries) of both logs and computes count/error-rate/avg/p95 — overall and grouped by route or query name — with no external store; it's process-local by design, scoped to one instance's uptime, not a multi-instance-safe metrics backend.
+- **`GET /observability/summary`** and **`GET /observability/log`** expose the aggregates and the raw recent-entry log; the frontend page polls both every 5s and renders them with the same Card/Table primitives used everywhere else in the app.
+
+This is deliberately the lightweight version — no OpenTelemetry, no Jaeger/Grafana to stand up alongside the app — in keeping with the project's frictionless-to-run goal. A multi-instance deployment would swap `ObservabilityService`'s in-memory buffer for a shared store (Redis, or a real APM), but the request/query instrumentation points wouldn't need to change.
 
 ## Setup
 

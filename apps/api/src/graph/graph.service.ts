@@ -1,6 +1,8 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { GraphClient } from "@agentgraph/graph-client";
 import { AppConfigService } from "../config/app-config.service";
+import { RequestContext } from "../common/request-context";
+import { ObservabilityService } from "../observability/observability.service";
 
 /**
  * Nest-lifecycle-aware holder of the single GraphClient instance for the
@@ -16,8 +18,13 @@ export class GraphService implements OnModuleInit, OnModuleDestroy {
   readonly client: GraphClient;
   private connected = false;
 
-  constructor(private readonly config: AppConfigService) {
-    this.client = new GraphClient(this.config.graph);
+  constructor(
+    private readonly config: AppConfigService,
+    private readonly observability: ObservabilityService,
+  ) {
+    this.client = new GraphClient(this.config.graph, (event) =>
+      this.observability.recordQuery(event, RequestContext.currentId()),
+    );
   }
 
   async onModuleInit(): Promise<void> {

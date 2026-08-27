@@ -10,4 +10,6 @@ export const queryKeys = {
   executionTrace: (id: string | undefined) => ["executions", id, "trace"] as const,
   jobStatus: (jobId: string | undefined) => ["jobs", "similarity-leaderboard", jobId] as const,
   savedViews: ["views"] as const,
+  observabilitySummary: ["observability", "summary"] as const,
+  observabilityLog: ["observability", "log"] as const,
 };

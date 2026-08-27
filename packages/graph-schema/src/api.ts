@@ -142,6 +142,83 @@ export const JobStatusDto = z.object({
 });
 export type JobStatusDto = z.infer<typeof JobStatusDto>;
 
+/**
+ * Lightweight, in-process observability: HTTP request timing, Cypher query
+ * timing, and BullMQ queue depth. No external agent/collector — the API
+ * keeps a bounded rolling window in memory and exposes it over REST so the
+ * frontend can render it directly.
+ */
+export const RequestLogEntryDto = z.object({
+  id: z.string(),
+  method: z.string(),
+  route: z.string(),
+  statusCode: z.number().int(),
+  durationMs: z.number(),
+  timestamp: z.string().datetime(),
+});
+export type RequestLogEntryDto = z.infer<typeof RequestLogEntryDto>;
+
+export const QueryLogEntryDto = z.object({
+  id: z.string(),
+  requestId: z.string().nullable(),
+  name: z.string(),
+  mode: z.enum(["READ", "WRITE"]),
+  durationMs: z.number(),
+  ok: z.boolean(),
+  timestamp: z.string().datetime(),
+});
+export type QueryLogEntryDto = z.infer<typeof QueryLogEntryDto>;
+
+export const RouteStatDto = z.object({
+  route: z.string(),
+  count: z.number().int(),
+  errorCount: z.number().int(),
+  avgMs: z.number(),
+  p95Ms: z.number(),
+});
+export type RouteStatDto = z.infer<typeof RouteStatDto>;
+
+export const QueryStatDto = z.object({
+  name: z.string(),
+  count: z.number().int(),
+  errorCount: z.number().int(),
+  avgMs: z.number(),
+  p95Ms: z.number(),
+});
+export type QueryStatDto = z.infer<typeof QueryStatDto>;
+
+export const ObservabilitySummaryDto = z.object({
+  uptimeSeconds: z.number(),
+  graphConnected: z.boolean(),
+  requests: z.object({
+    total: z.number().int(),
+    errorCount: z.number().int(),
+    avgMs: z.number(),
+    p95Ms: z.number(),
+    byRoute: z.array(RouteStatDto),
+  }),
+  queries: z.object({
+    total: z.number().int(),
+    errorCount: z.number().int(),
+    avgMs: z.number(),
+    p95Ms: z.number(),
+    byName: z.array(QueryStatDto),
+  }),
+  queue: z.object({
+    waiting: z.number().int(),
+    active: z.number().int(),
+    completed: z.number().int(),
+    failed: z.number().int(),
+  }),
+});
+export type ObservabilitySummaryDto = z.infer<typeof ObservabilitySummaryDto>;
+
+export const ObservabilityLogDto = z.object({
+  requests: z.array(RequestLogEntryDto),
+  queries: z.array(QueryLogEntryDto),
+});
+export type ObservabilityLogDto = z.infer<typeof ObservabilityLogDto>;
+
 /** Global full-text search (⌘K) — backed by CognoDB's fulltext index support. */
 export const SearchQuery = z.object({
   q: z.string().trim().min(1).max(120),

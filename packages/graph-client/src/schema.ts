@@ -53,7 +53,7 @@ export async function applyGraphSchema(client: GraphClient): Promise<ApplyGraphS
 
   for (const statement of [...CONSTRAINTS, ...INDEXES, ...FULLTEXT_INDEXES]) {
     try {
-      await client.writeQuery(statement);
+      await client.writeQuery(statement, {}, "schemaSetup");
       applied.push(statement);
     } catch (err) {
       failed.push({ statement, message: err instanceof Error ? err.message : String(err) });

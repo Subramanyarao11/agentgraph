@@ -16,9 +16,11 @@ export class SearchService {
   constructor(private readonly graph: GraphService) {}
 
   async search(term: string): Promise<SearchResultDto[]> {
-    const result = await this.graph.client.readQuery(FULLTEXT_SEARCH_QUERY, {
-      term: escapeLuceneTerm(term),
-    });
+    const result = await this.graph.client.readQuery(
+      FULLTEXT_SEARCH_QUERY,
+      { term: escapeLuceneTerm(term) },
+      "fulltextSearch",
+    );
     return result.records.map((r) => ({
       node: toGraphNodeDto(r.get("node") as Neo4jNode),
       score: Number(unwrapValue(r.get("score"))),

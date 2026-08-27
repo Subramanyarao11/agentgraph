@@ -2,6 +2,7 @@ import type { ComponentProps } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
+  Activity,
   Bookmark,
   Bot,
   Database,
@@ -22,6 +23,7 @@ import { CommandPalette, openCommandPalette } from "@/components/command-palette
 import { catalogListQueryOptions } from "@/hooks/use-catalog";
 import { exposureQueryOptions } from "@/hooks/use-analysis";
 import { savedViewsQueryOptions } from "@/hooks/use-views";
+import { observabilityLogQueryOptions, observabilitySummaryQueryOptions } from "@/hooks/use-observability";
 import type { NodeLabel } from "@agentgraph/graph-schema";
 import { cn } from "@/lib/utils";
 
@@ -110,6 +112,20 @@ const NAV_SECTIONS: Array<{ label: string; items: NavItem[] }> = [
         prefetch: prefetchCatalog("Execution"),
       },
       { to: "/views", label: "Saved Views", icon: Bookmark, prefetch: (qc) => qc.prefetchQuery(savedViewsQueryOptions) },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      {
+        to: "/observability",
+        label: "Observability",
+        icon: Activity,
+        prefetch: (qc) => {
+          qc.prefetchQuery(observabilitySummaryQueryOptions);
+          qc.prefetchQuery(observabilityLogQueryOptions);
+        },
+      },
     ],
   },
 ];

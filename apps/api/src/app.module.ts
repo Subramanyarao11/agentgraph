@@ -10,6 +10,7 @@ import { CatalogModule } from "./catalog/catalog.module";
 import { GraphModule } from "./graph/graph.module";
 import { HealthModule } from "./health/health.module";
 import { JobsModule } from "./jobs/jobs.module";
+import { ObservabilityModule } from "./observability/observability.module";
 import { RedisModule } from "./redis/redis.module";
 import { SearchModule } from "./search/search.module";
 import { SavedViewEntity } from "./views/saved-view.entity";
@@ -40,6 +41,7 @@ import { ViewsModule } from "./views/views.module";
       }),
     }),
     AppConfigModule,
+    ObservabilityModule,
     GraphModule,
     RedisModule,
     HealthModule,

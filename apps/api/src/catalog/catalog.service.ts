@@ -26,12 +26,14 @@ export class CatalogService {
          ORDER BY n.name
          SKIP $offset LIMIT $limit`,
         { search: search ?? null, offset: cypherInt(offset), limit: cypherInt(limit) },
+        "catalogList",
       ),
       this.graph.client.readQuery(
         `MATCH (n:${label})
          WHERE $search IS NULL OR toLower(n.name) CONTAINS toLower($search)
          RETURN count(n) AS total`,
         { search: search ?? null },
+        "catalogCount",
       ),
     ]);
 
@@ -49,6 +51,7 @@ export class CatalogService {
        OPTIONAL MATCH (n)-[r]-(m)
        RETURN n, collect(DISTINCT r) AS rels, collect(DISTINCT m) AS neighbors`,
       { id },
+      "catalogDetail",
     );
 
     const record = result.records[0];

@@ -35,8 +35,8 @@ export class AnalysisService {
   /** Blast radius: flat ranked list + a subgraph for visualization. */
   async impact(nodeId: string, maxHops: number): Promise<{ affected: AffectedNode[]; graph: GraphResultDto }> {
     const [listResult, pathsResult] = await Promise.all([
-      this.graph.client.readQuery(impactListQuery(maxHops), { nodeId }),
-      this.graph.client.readQuery(impactPathsQuery(maxHops), { nodeId }),
+      this.graph.client.readQuery(impactListQuery(maxHops), { nodeId }, "impactList"),
+      this.graph.client.readQuery(impactPathsQuery(maxHops), { nodeId }, "impactPaths"),
     ]);
 
     const affected = listResult.records.map((r) => ({
@@ -50,14 +50,14 @@ export class AnalysisService {
 
   /** Data lineage for a dataset: who/what can produce or consume it. */
   async lineage(datasetId: string): Promise<GraphResultDto> {
-    const result = await this.graph.client.readQuery(LINEAGE_PATH_QUERY, { datasetId });
+    const result = await this.graph.client.readQuery(LINEAGE_PATH_QUERY, { datasetId }, "lineage");
     const paths = result.records.map((r) => r.get("path") as Path);
     return pathsToGraphResult(paths);
   }
 
   /** Agents recommended by shared tool usage with a given agent. */
   async similarAgents(agentId: string, limit: number): Promise<SimilarAgentResultDto[]> {
-    const result = await this.graph.client.readQuery(SIMILAR_AGENTS_QUERY, { agentId, limit: cypherInt(limit) });
+    const result = await this.graph.client.readQuery(SIMILAR_AGENTS_QUERY, { agentId, limit: cypherInt(limit) }, "similarAgents");
     return result.records.map((r) => ({
       agent: toGraphNodeDto(r.get("other") as Neo4jNode),
       sharedTools: Number(unwrapValue(r.get("sharedTools"))),
@@ -68,7 +68,7 @@ export class AnalysisService {
 
   /** Agents that can transitively reach sensitive datasets, shortest path first. */
   async exposure(sensitivity: "confidential" | "pii", maxHops: number): Promise<ExposurePathDto[]> {
-    const result = await this.graph.client.readQuery(exposureQuery(maxHops), { sensitivity });
+    const result = await this.graph.client.readQuery(exposureQuery(maxHops), { sensitivity }, "exposure");
     return result.records.map((r) => {
       const path = r.get("path") as Path;
       const pathNodes = [path.start, ...path.segments.map((s) => s.end)].map(toGraphNodeDto);
@@ -83,7 +83,7 @@ export class AnalysisService {
 
   /** Full provenance of a single execution. */
   async executionTrace(executionId: string): Promise<ExecutionTrace | null> {
-    const result = await this.graph.client.readQuery(EXECUTION_TRACE_QUERY, { executionId });
+    const result = await this.graph.client.readQuery(EXECUTION_TRACE_QUERY, { executionId }, "executionTrace");
     const record = result.records[0];
     if (!record) return null;
 
@@ -101,7 +101,7 @@ export class AnalysisService {
 
   /** All-pairs similarity leaderboard — expensive, called from the BullMQ processor, not a request handler. */
   async similarityLeaderboard(): Promise<SimilarityPairDto[]> {
-    const result = await this.graph.client.readQuery(SIMILARITY_LEADERBOARD_QUERY);
+    const result = await this.graph.client.readQuery(SIMILARITY_LEADERBOARD_QUERY, {}, "similarityLeaderboard");
     return result.records.map((r) => ({
       agentA: toGraphNodeDto(r.get("a") as Neo4jNode),
       agentB: toGraphNodeDto(r.get("b") as Neo4jNode),
