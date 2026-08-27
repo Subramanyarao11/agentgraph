@@ -180,7 +180,7 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      <div className="border-t border-border p-4 text-[11px] leading-relaxed text-muted-foreground">
+      <div className="border-t border-border p-4 text-[11px] leading-relaxed text-tertiary-foreground">
         Backed by CognoDB — a managed graph database speaking Bolt + openCypher.
       </div>
     </aside>

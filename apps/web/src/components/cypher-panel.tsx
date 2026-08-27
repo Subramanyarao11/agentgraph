@@ -80,7 +80,7 @@ export function CypherPanel({
                 </Button>
               </div>
               {params && Object.keys(params).length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-tertiary-foreground">
                   {Object.entries(params).map(([key, value]) => (
                     <span key={key}>
                       <code className="text-foreground">${key}</code> = {JSON.stringify(value)}

@@ -53,7 +53,7 @@ function SavedViewsPage() {
                       <Badge variant="secondary">{view.type}</Badge>
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
-                      <code className="rounded bg-secondary px-2 py-1 text-xs text-muted-foreground">
+                      <code className="rounded bg-secondary px-2 py-1 text-xs text-tertiary-foreground">
                         {JSON.stringify(view.params)}
                       </code>
                       <Button

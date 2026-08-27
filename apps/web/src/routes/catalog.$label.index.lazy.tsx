@@ -51,7 +51,7 @@ function CatalogListPage() {
             }}
           />
         </div>
-        <span className="text-xs text-muted-foreground" aria-live="polite">
+        <span className="text-xs text-tertiary-foreground" aria-live="polite">
           {query.data ? `${query.data.total} total` : ""}
         </span>
       </div>
@@ -104,7 +104,7 @@ function CatalogListPage() {
           </Table>
 
           <div className="mt-4 flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-tertiary-foreground">
               Showing {offset + 1}–{Math.min(offset + PAGE_SIZE, query.data?.total ?? 0)} of {query.data?.total ?? 0}
             </p>
             <div className="flex gap-2">

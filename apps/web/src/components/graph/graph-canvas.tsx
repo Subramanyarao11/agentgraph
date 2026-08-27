@@ -152,7 +152,7 @@ export function GraphCanvas({
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="font-medium">{nodeName(n.node.properties)}</p>
-                  <p className="text-muted-foreground">{n.node.label}</p>
+                  <p className="text-tertiary-foreground">{n.node.label}</p>
                 </TooltipContent>
               </Tooltip>
             );

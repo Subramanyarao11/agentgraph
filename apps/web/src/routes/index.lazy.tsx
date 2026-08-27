@@ -71,10 +71,10 @@ function Dashboard() {
                         params={{ id: String(exec.properties.id) }}
                         className="flex items-center justify-between rounded-md px-1.5 py-2.5 text-sm transition-colors hover:bg-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                       >
-                        <span className="font-mono text-xs text-muted-foreground">
+                        <span className="font-mono text-xs text-tertiary-foreground">
                           {String(exec.properties.id).slice(0, 8)}
                         </span>
-                        <span className="text-muted-foreground">
+                        <span className="text-tertiary-foreground">
                           {new Date(String(exec.properties.startedAt)).toLocaleString()}
                         </span>
                         <StatusBadge status={String(exec.properties.status)} />

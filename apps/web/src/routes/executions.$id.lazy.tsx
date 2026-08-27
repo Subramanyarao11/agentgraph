@@ -128,7 +128,7 @@ function ExecutionTracePage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs text-tertiary-foreground">{label}</span>
       <span className="font-medium">{children}</span>
     </div>
   );

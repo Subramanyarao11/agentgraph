@@ -205,7 +205,7 @@ function ObservabilityPage() {
                               <Badge variant={r.statusCode >= 400 ? "destructive" : "success"}>{r.statusCode}</Badge>
                             </TableCell>
                             <TableCell>{formatMs(r.durationMs)}</TableCell>
-                            <TableCell className="text-muted-foreground">
+                            <TableCell className="text-tertiary-foreground">
                               {new Date(r.timestamp).toLocaleTimeString()}
                             </TableCell>
                           </TableRow>
@@ -239,7 +239,7 @@ function ObservabilityPage() {
                               <Badge variant={q.ok ? "success" : "destructive"}>{q.ok ? "ok" : "error"}</Badge>
                             </TableCell>
                             <TableCell>{formatMs(q.durationMs)}</TableCell>
-                            <TableCell className="text-muted-foreground">
+                            <TableCell className="text-tertiary-foreground">
                               {new Date(q.timestamp).toLocaleTimeString()}
                             </TableCell>
                           </TableRow>

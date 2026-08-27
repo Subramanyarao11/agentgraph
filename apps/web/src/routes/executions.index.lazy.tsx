@@ -48,7 +48,7 @@ function ExecutionsPage() {
             <StaggerGroup as="tbody" staggerDelay={0.015} className="[&_tr:last-child]:border-0">
               {items.map((item) => (
                 <StaggerItem as="tr" key={item.id} className="border-b border-border transition-colors hover:bg-secondary/40">
-                  <TableCell className="font-mono text-xs text-muted-foreground">{String(item.properties.id).slice(0, 8)}</TableCell>
+                  <TableCell className="font-mono text-xs text-tertiary-foreground">{String(item.properties.id).slice(0, 8)}</TableCell>
                   <TableCell>
                     <StatusBadge status={String(item.properties.status)} />
                   </TableCell>
@@ -66,7 +66,7 @@ function ExecutionsPage() {
             </StaggerGroup>
           </Table>
           <div className="mt-4 flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-tertiary-foreground">
               Showing {offset + 1}–{Math.min(offset + PAGE_SIZE, query.data?.total ?? 0)} of {query.data?.total ?? 0}
             </p>
             <div className="flex gap-2">

@@ -139,14 +139,14 @@ export function CommandPalette() {
                   >
                     <display.icon className={`h-4 w-4 shrink-0 ${display.color}`} aria-hidden="true" />
                     <span className="flex-1 truncate">{nodeName(r.node.properties)}</span>
-                    <span className="text-xs text-muted-foreground">{r.node.label}</span>
+                    <span className="text-xs text-tertiary-foreground">{r.node.label}</span>
                   </button>
                 );
               })
             )}
           </div>
 
-          <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[11px] text-tertiary-foreground">
             <span>Full-text search over CognoDB's fulltext index</span>
             <span className="flex items-center gap-2">
               <kbd className="rounded border border-border px-1.5 py-0.5">↑↓ to navigate</kbd>
