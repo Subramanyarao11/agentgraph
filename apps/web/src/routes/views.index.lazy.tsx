@@ -63,7 +63,7 @@ function SavedViewsPage() {
                         onClick={() => remove.mutate(view.id)}
                         disabled={remove.isPending}
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" aria-hidden="true" />
+                        <Trash2 className="h-3.5 w-3.5 text-destructive-text" aria-hidden="true" />
                       </Button>
                     </CardContent>
                   </Card>

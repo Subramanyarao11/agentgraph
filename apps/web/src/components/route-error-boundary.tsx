@@ -27,9 +27,9 @@ export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
         className="w-full max-w-sm rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center"
       >
         <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15">
-          <AlertTriangle className="h-5 w-5 text-destructive" aria-hidden="true" />
+          <AlertTriangle className="h-5 w-5 text-destructive-text" aria-hidden="true" />
         </div>
-        <p className="text-sm font-medium text-destructive">Something went wrong on this page</p>
+        <p className="text-sm font-medium text-destructive-text">Something went wrong on this page</p>
         <p className="mt-1 text-sm text-muted-foreground">
           {error instanceof Error ? error.message : "An unexpected error occurred."}
         </p>

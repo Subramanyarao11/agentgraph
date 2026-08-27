@@ -28,8 +28,8 @@ export function HealthIndicator() {
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
               allUp
-                ? "border-success/30 bg-success/10 text-success"
-                : "border-destructive/30 bg-destructive/10 text-destructive",
+                ? "border-success/30 bg-success/10 text-success-text"
+                : "border-destructive/30 bg-destructive/10 text-destructive-text",
             )}
           >
             {allUp ? (

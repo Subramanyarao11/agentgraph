@@ -30,8 +30,8 @@ export function StatTile({
                 aria-live="polite"
                 className={cn(
                   "mt-1.5 text-2xl font-semibold tabular-nums",
-                  tone === "warning" && "text-warning",
-                  tone === "destructive" && "text-destructive",
+                  tone === "warning" && "text-warning-text",
+                  tone === "destructive" && "text-destructive-text",
                 )}
               >
                 {value}
@@ -42,8 +42,8 @@ export function StatTile({
             className={cn(
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
               tone === "default" && "bg-accent text-accent-foreground",
-              tone === "warning" && "bg-warning/15 text-warning",
-              tone === "destructive" && "bg-destructive/15 text-destructive",
+              tone === "warning" && "bg-warning/15 text-warning-text",
+              tone === "destructive" && "bg-destructive/15 text-destructive-text",
             )}
           >
             <Icon className="h-4.5 w-4.5" aria-hidden="true" />
