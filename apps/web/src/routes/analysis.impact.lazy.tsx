@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Radar } from "lucide-react";
 import { CYPHER_EXPLAINERS, impactListQuery, type GraphNodeDto, type NodeLabel } from "@agentgraph/graph-schema";
 import { AppShell } from "@/components/layout/app-shell";
@@ -25,6 +25,7 @@ export const Route = createLazyFileRoute("/analysis/impact")({
 const SOURCE_LABELS: NodeLabel[] = ["Tool", "Workflow"];
 
 function ImpactPage() {
+  const navigate = useNavigate();
   const [sourceLabel, setSourceLabel] = useState<NodeLabel>("Tool");
   const [selected, setSelected] = useState<GraphNodeDto | null>(null);
   const [maxHops, setMaxHops] = useState(4);
@@ -148,7 +149,14 @@ function ImpactPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="h-[380px] w-full">
-                    <GraphCanvas nodes={query.data?.graph.nodes ?? []} edges={query.data?.graph.edges ?? []} highlightId={query.data?.graph.nodes[0]?.id} />
+                    <GraphCanvas
+                      nodes={query.data?.graph.nodes ?? []}
+                      edges={query.data?.graph.edges ?? []}
+                      highlightId={query.data?.graph.nodes[0]?.id}
+                      onNodeClick={(node) =>
+                        navigate({ to: "/catalog/$label/$id", params: { label: node.label, id: String(node.properties.id) } })
+                      }
+                    />
                   </div>
                   <div className="mt-3">
                     <GraphLegend labels={["Agent", "Workflow", "Tool"]} />

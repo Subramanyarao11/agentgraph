@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { GitCommitHorizontal } from "lucide-react";
 import { CYPHER_EXPLAINERS, LINEAGE_PATH_QUERY, type GraphNodeDto } from "@agentgraph/graph-schema";
 import { AppShell } from "@/components/layout/app-shell";
@@ -21,6 +21,7 @@ export const Route = createLazyFileRoute("/analysis/lineage")({
 });
 
 function LineagePage() {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<GraphNodeDto | null>(null);
   const datasetId = selected?.properties.id as string | undefined;
   const query = useLineage(datasetId);
@@ -60,7 +61,14 @@ function LineagePage() {
             </CardHeader>
             <CardContent>
               <div className="h-[440px] w-full">
-                <GraphCanvas nodes={query.data?.nodes ?? []} edges={query.data?.edges ?? []} highlightId={query.data?.nodes.find((n) => n.properties.id === datasetId)?.id} />
+                <GraphCanvas
+                  nodes={query.data?.nodes ?? []}
+                  edges={query.data?.edges ?? []}
+                  highlightId={query.data?.nodes.find((n) => n.properties.id === datasetId)?.id}
+                  onNodeClick={(node) =>
+                    navigate({ to: "/catalog/$label/$id", params: { label: node.label, id: String(node.properties.id) } })
+                  }
+                />
               </div>
               <div className="mt-3">
                 <GraphLegend labels={["Agent", "Workflow", "Step", "Tool", "Dataset"]} />

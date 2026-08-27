@@ -8,6 +8,7 @@ import {
   Database,
   GitCommitHorizontal,
   LayoutDashboard,
+  Network,
   PlayCircle,
   Radar,
   Search,
@@ -68,6 +69,7 @@ const NAV_SECTIONS: Array<{ label: string; items: NavItem[] }> = [
           qc.prefetchQuery(exposureQueryOptions("pii"));
         },
       },
+      { to: "/explore", label: "Graph Explorer", icon: Network },
     ],
   },
   {

@@ -1,4 +1,4 @@
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -19,6 +19,7 @@ export const Route = createLazyFileRoute("/catalog/$label/$id")({
 
 function CatalogDetailPage() {
   const { label, id } = Route.useParams();
+  const navigate = useNavigate();
   const query = useCatalogDetail(label, id);
   const display = NODE_DISPLAY[label];
 
@@ -83,7 +84,15 @@ function CatalogDetailPage() {
                 {query.data && query.data.nodes.length > 1 ? (
                   <>
                     <div className="h-[380px] w-full">
-                      <GraphCanvas nodes={query.data.nodes} edges={query.data.edges} highlightId={center.id} />
+                      <GraphCanvas
+                        nodes={query.data.nodes}
+                        edges={query.data.edges}
+                        highlightId={center.id}
+                        onNodeClick={(node) =>
+                          node.id !== center.id &&
+                          navigate({ to: "/catalog/$label/$id", params: { label: node.label, id: String(node.properties.id) } })
+                        }
+                      />
                     </div>
                     <div className="mt-3">
                       <GraphLegend labels={labelsInGraph} />
