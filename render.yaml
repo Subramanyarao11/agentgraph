@@ -1,0 +1,65 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Deploys: the API (Docker), the web app (Docker), a managed Postgres
+# (saved views / job metadata), and a managed Redis (BullMQ). The graph
+# database itself is NOT provisioned here — point GRAPH_URI/GRAPH_USER/
+# GRAPH_PASSWORD at your CognoDB Cloud instance when prompted.
+#
+# To deploy: push this repo to GitHub, then in the Render dashboard choose
+# "New > Blueprint" and select the repo. Render will prompt for every
+# `sync: false` value below. After the first deploy, note the assigned
+# URLs for agentgraph-api and agentgraph-web and update CORS_ORIGIN /
+# VITE_API_URL if they differ from the guessed defaults, then redeploy.
+
+databases:
+  - name: agentgraph-postgres
+    plan: free
+    databaseName: agentgraph
+    user: agentgraph
+
+services:
+  - type: keyvalue
+    name: agentgraph-redis
+    plan: free
+    ipAllowList: [] # internal access only — the API/worker run on Render too
+
+  - type: web
+    name: agentgraph-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GRAPH_URI
+        sync: false # bolt+s://<instance-id>.databases.cognodb.cloud
+      - key: GRAPH_USER
+        value: cognodb
+      - key: GRAPH_PASSWORD
+        sync: false
+      - key: GRAPH_DATABASE
+        value: neo4j
+      - key: POSTGRES_URL
+        fromDatabase:
+          name: agentgraph-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: agentgraph-redis
+          property: connectionString
+      - key: CORS_ORIGIN
+        value: https://agentgraph-web.onrender.com
+
+  - type: web
+    name: agentgraph-web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./apps/web/Dockerfile
+    dockerContext: .
+    dockerBuildArgs:
+      VITE_API_URL: https://agentgraph-api.onrender.com
+    envVars:
+      - key: NODE_ENV
+        value: production

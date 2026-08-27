@@ -208,6 +208,16 @@ graphdb/
 | ![Similar agents](docs/screenshots/similar-agents.jpg) Similar agents | ![Similarity leaderboard](docs/screenshots/similarity-leaderboard.jpg) Similarity leaderboard (async job) |
 | ![Node detail with 1-hop neighborhood graph](docs/screenshots/node-detail-graph.png) Node detail — 1-hop neighborhood graph | |
 
+## Deploying (Render)
+
+`render.yaml` at the repo root is a [Render Blueprint](https://render.com/docs/blueprint-spec) that provisions the API, the web app, a managed Postgres, and a managed Redis from Dockerfiles — everything except the graph database itself.
+
+1. Push this repo to GitHub (already done if you're reading this on GitHub).
+2. In the [Render dashboard](https://dashboard.render.com), **New → Blueprint**, select this repo.
+3. Render will prompt for the values marked `sync: false` in `render.yaml`: `GRAPH_URI` and `GRAPH_PASSWORD` from your CognoDB Cloud instance (see [Setup](#setup) above).
+4. Deploy. Once both services are up, check the actual assigned URLs — if they differ from `agentgraph-api.onrender.com` / `agentgraph-web.onrender.com` (Render service names are globally unique, so a generic name may already be taken), update `CORS_ORIGIN` on the API service and `VITE_API_URL` under the web service's Docker build args, then trigger a redeploy of both.
+5. Run the seed script once against the deployed CognoDB instance (`pnpm seed`, with your local `.env` pointed at the same CognoDB URI) so the hosted demo has data.
+
 ## Demo
 
 - **Hosted app:** _TODO — add link_

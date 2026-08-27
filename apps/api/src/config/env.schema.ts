@@ -9,6 +9,9 @@ import { z } from "zod";
 export const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   API_PORT: z.coerce.number().int().positive().default(3001),
+  // Render (and most PaaS hosts) inject PORT and expect the app to bind to
+  // it, taking precedence over API_PORT when set.
+  PORT: z.coerce.number().int().positive().optional(),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
 
   GRAPH_URI: z.string().min(1),
