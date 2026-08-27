@@ -16,6 +16,11 @@ export type PaginationQuery = z.infer<typeof PaginationQuery>;
 export const NodeLabelSchema = z.nativeEnum(NodeLabel);
 export const RelTypeSchema = z.nativeEnum(RelType);
 
+export const CatalogListQuery = PaginationQuery.extend({
+  search: z.string().trim().min(1).max(120).optional(),
+});
+export type CatalogListQuery = z.infer<typeof CatalogListQuery>;
+
 /** A node as rendered to the client: label + flattened properties. */
 export const GraphNodeDto = z.object({
   id: z.string(),
@@ -39,6 +44,14 @@ export const GraphResultDto = z.object({
   edges: z.array(GraphEdgeDto),
 });
 export type GraphResultDto = z.infer<typeof GraphResultDto>;
+
+export const CatalogListResultDto = z.object({
+  items: z.array(GraphNodeDto),
+  total: z.number().int().nonnegative(),
+  limit: z.number().int(),
+  offset: z.number().int(),
+});
+export type CatalogListResultDto = z.infer<typeof CatalogListResultDto>;
 
 /** Blast-radius / impact-analysis request: "if this node breaks, what's affected?" */
 export const ImpactAnalysisQuery = z.object({
@@ -82,3 +95,49 @@ export const ExposurePathDto = z.object({
   path: z.array(GraphNodeDto),
 });
 export type ExposurePathDto = z.infer<typeof ExposurePathDto>;
+
+/**
+ * Saved analysis views live in Postgres (app-side metadata), not the graph —
+ * they're a bookmark of "run analysis X with these params", not part of the
+ * domain graph itself.
+ */
+export const SavedViewType = z.enum(["impact", "lineage", "exposure", "similar-agents"]);
+export type SavedViewType = z.infer<typeof SavedViewType>;
+
+export const CreateSavedViewDto = z.object({
+  name: z.string().min(1).max(120),
+  description: z.string().max(500).optional(),
+  type: SavedViewType,
+  params: z.record(z.string(), z.unknown()),
+});
+export type CreateSavedViewDto = z.infer<typeof CreateSavedViewDto>;
+
+export const SavedViewDto = CreateSavedViewDto.extend({
+  id: z.string().uuid(),
+  createdAt: z.string().datetime(),
+});
+export type SavedViewDto = z.infer<typeof SavedViewDto>;
+
+/**
+ * Async similarity-leaderboard job (BullMQ): computing all-pairs agent
+ * similarity across the whole graph is O(n^2) in agent count, so it runs as
+ * a background job rather than inline on a request.
+ */
+export const SimilarityPairDto = z.object({
+  agentA: GraphNodeDto,
+  agentB: GraphNodeDto,
+  sharedTools: z.number().int().nonnegative(),
+  score: z.number(),
+});
+export type SimilarityPairDto = z.infer<typeof SimilarityPairDto>;
+
+export const JobStatus = z.enum(["waiting", "active", "completed", "failed", "not_found"]);
+export type JobStatus = z.infer<typeof JobStatus>;
+
+export const JobStatusDto = z.object({
+  jobId: z.string(),
+  status: JobStatus,
+  result: z.array(SimilarityPairDto).nullable(),
+  failedReason: z.string().nullable(),
+});
+export type JobStatusDto = z.infer<typeof JobStatusDto>;

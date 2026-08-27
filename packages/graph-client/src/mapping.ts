@@ -1,5 +1,5 @@
-import neo4j, { type Node as Neo4jNode, type Relationship } from "neo4j-driver";
-import type { GraphEdgeDto, GraphNodeDto, NodeLabel, RelType } from "@agentgraph/graph-schema";
+import neo4j, { type Node as Neo4jNode, type Path, type Relationship } from "neo4j-driver";
+import type { GraphEdgeDto, GraphNodeDto, GraphResultDto, NodeLabel, RelType } from "@agentgraph/graph-schema";
 
 /**
  * Bolt returns Neo4j Integers (safe past 2^53) and temporal types that
@@ -56,4 +56,30 @@ export function isNeo4jNode(value: unknown): value is Neo4jNode {
 
 export function isNeo4jRelationship(value: unknown): value is Relationship {
   return neo4j.isRelationship(value);
+}
+
+/**
+ * Flattens one or more Cypher `Path`s (as returned by e.g. `shortestPath(...)`)
+ * into a deduplicated node/edge set the frontend can render as a graph —
+ * used by every "explore"/impact/lineage/exposure endpoint that returns a
+ * subgraph rather than a flat list.
+ */
+export function pathsToGraphResult(paths: Path[]): GraphResultDto {
+  const nodes = new Map<string, GraphNodeDto>();
+  const edges = new Map<string, GraphEdgeDto>();
+
+  for (const path of paths) {
+    const startDto = toGraphNodeDto(path.start);
+    nodes.set(startDto.id, startDto);
+    for (const segment of path.segments) {
+      const segStart = toGraphNodeDto(segment.start);
+      const segEnd = toGraphNodeDto(segment.end);
+      nodes.set(segStart.id, segStart);
+      nodes.set(segEnd.id, segEnd);
+      const edgeDto = toGraphEdgeDto(segment.relationship);
+      edges.set(edgeDto.id, edgeDto);
+    }
+  }
+
+  return { nodes: [...nodes.values()], edges: [...edges.values()] };
 }

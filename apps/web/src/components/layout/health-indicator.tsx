@@ -1,0 +1,50 @@
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { useHealth } from "@/hooks/use-health";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+
+export function HealthIndicator() {
+  const { data, isLoading, isError } = useHealth();
+
+  if (isLoading) {
+    return (
+      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Checking systems…
+      </span>
+    );
+  }
+
+  const allUp = !isError && data?.status === "up";
+  const label = isError ? "API unreachable" : allUp ? "All systems up" : "Degraded";
+
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className={cn(
+              "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
+              allUp
+                ? "border-success/30 bg-success/10 text-success"
+                : "border-destructive/30 bg-destructive/10 text-destructive",
+            )}
+          >
+            {allUp ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertCircle className="h-3.5 w-3.5" />}
+            {label}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          {data ? (
+            <div className="space-y-0.5">
+              <p>Graph: {data.components.graph}</p>
+              <p>Postgres: {data.components.postgres}</p>
+              <p>Redis: {data.components.redis}</p>
+            </div>
+          ) : (
+            <p>Could not reach the API.</p>
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
