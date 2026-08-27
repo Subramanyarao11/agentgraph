@@ -294,7 +294,10 @@ export function GraphCanvas({
                   <Tooltip key={n.id}>
                     <TooltipTrigger asChild>
                       <m.g
-                        initial={{ opacity: 0, scale: 0.4 }}
+                        // Enter from ~95% scale, not 0 — scaling up from nothing reads as a
+                        // cheap "pop", while a near-full-size fade-in feels calmer and more
+                        // considered for something that's about to sit still on screen.
+                        initial={{ opacity: 0, scale: 0.94 }}
                         animate={{ opacity: dimmed ? 0.25 : 1, scale: 1 }}
                         // Opacity is reused for hover-dimming, not just the entrance fade — it
                         // must react instantly regardless of index, so only `scale` (entrance

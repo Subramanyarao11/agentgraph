@@ -1,10 +1,13 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { Bookmark, Trash2 } from "lucide-react";
 import { AnimatePresence, m } from "framer-motion";
+import type { SavedViewDto } from "@agentgraph/graph-schema";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
 import { CardGridSkeleton } from "@/components/skeletons";
@@ -18,6 +21,7 @@ export const Route = createLazyFileRoute("/views/")({
 function SavedViewsPage() {
   const query = useSavedViews();
   const remove = useDeleteSavedView();
+  const [pendingDelete, setPendingDelete] = useState<SavedViewDto | null>(null);
 
   return (
     <AppShell
@@ -33,6 +37,11 @@ function SavedViewsPage() {
           icon={Bookmark}
           title="No saved views yet"
           description="Run an Impact, Lineage, Exposure, or Similar Agents analysis, then click 'Save view'."
+          action={
+            <Button asChild variant="outline" size="sm">
+              <Link to="/analysis/impact">Go to Impact Analysis</Link>
+            </Button>
+          }
         />
       ) : (
         <StaggerGroup className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -60,8 +69,7 @@ function SavedViewsPage() {
                         variant="ghost"
                         size="icon"
                         aria-label={`Delete saved view "${view.name}"`}
-                        onClick={() => remove.mutate(view.id)}
-                        disabled={remove.isPending}
+                        onClick={() => setPendingDelete(view)}
                       >
                         <Trash2 className="h-3.5 w-3.5 text-destructive-text" aria-hidden="true" />
                       </Button>
@@ -73,6 +81,18 @@ function SavedViewsPage() {
           </AnimatePresence>
         </StaggerGroup>
       )}
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title={`Delete "${pendingDelete?.name}"?`}
+        description="This removes the saved view permanently. The underlying analysis and data aren't affected."
+        confirmLabel="Delete"
+        isPending={remove.isPending}
+        onConfirm={() => {
+          if (!pendingDelete) return;
+          remove.mutate(pendingDelete.id, { onSuccess: () => setPendingDelete(null) });
+        }}
+      />
     </AppShell>
   );
 }

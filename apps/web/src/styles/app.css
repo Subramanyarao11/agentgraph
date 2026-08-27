@@ -179,6 +179,22 @@
     color: hsl(var(--foreground));
     font-feature-settings: "cv11", "ss01";
   }
+  /* lucide-react's default 2px stroke is tuned for sitting next to semibold text;
+     almost everywhere in this app pairs icons with regular/medium body text, where
+     2px reads slightly heavy. CSS overrides the per-icon stroke-width *attribute*
+     lucide renders (presentation attributes always lose to CSS), so this is a
+     one-line, app-wide correction instead of touching every icon usage. Semibold
+     contexts (e.g. inside a font-semibold heading) can still opt back up locally. */
+  svg.lucide {
+    stroke-width: 1.75px;
+  }
+}
+
+/* A soft top/bottom fade on a scrollable list — a static, no-JS hint that there's
+   more above/below, rather than a hard-cut edge. Cheap to apply, cheap to skip on
+   short lists (fades into nothing when content doesn't overflow). */
+.scroll-fade-y {
+  mask-image: linear-gradient(to bottom, transparent, black 12px, black calc(100% - 12px), transparent);
 }
 
 @keyframes shimmer {

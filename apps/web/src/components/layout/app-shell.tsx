@@ -20,8 +20,8 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-6">
           <div>
-            <h1 className="text-sm font-semibold leading-none">{title}</h1>
-            {description && <p className="mt-1 text-xs text-muted-foreground">{description}</p>}
+            <h1 className="text-balance text-sm font-semibold leading-none">{title}</h1>
+            {description && <p className="mt-1 text-pretty text-xs text-muted-foreground">{description}</p>}
           </div>
           <div className="flex items-center gap-3">
             {actions}

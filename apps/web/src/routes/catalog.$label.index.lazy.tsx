@@ -65,6 +65,20 @@ function CatalogListPage() {
           icon={display.icon}
           title={`No ${display.plural.toLowerCase()} found`}
           description={search ? "Try a different search term." : "Run the seed script to populate demo data."}
+          action={
+            search && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearch("");
+                  setOffset(0);
+                }}
+              >
+                Clear search
+              </Button>
+            )
+          }
         />
       ) : (
         <>
@@ -107,7 +121,7 @@ function CatalogListPage() {
             <p className="text-xs text-tertiary-foreground">
               Showing {offset + 1}–{Math.min(offset + PAGE_SIZE, query.data?.total ?? 0)} of {query.data?.total ?? 0}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button variant="outline" size="sm" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}>
                 <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" /> Prev
               </Button>

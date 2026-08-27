@@ -113,7 +113,7 @@ export function CommandPalette() {
             {results.isFetching && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" aria-hidden="true" />}
           </div>
 
-          <div ref={listRef} id={listboxId} role="listbox" className="max-h-80 overflow-y-auto p-2">
+          <div ref={listRef} id={listboxId} role="listbox" className="scroll-fade-y max-h-80 overflow-y-auto p-2">
             {term.trim().length === 0 ? (
               <p className="px-2 py-6 text-center text-sm text-muted-foreground">
                 Type to search across the whole graph.

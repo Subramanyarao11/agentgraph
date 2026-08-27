@@ -39,5 +39,8 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
 }
 
 export function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-4 py-2.5 align-middle", className)} {...props} />;
+  // tabular-nums only changes how digit characters space themselves — it's a no-op
+  // on non-numeric cells, so applying it table-wide is safe and keeps every numeric
+  // column (durations, counts, scores) aligned instead of ragged.
+  return <td className={cn("px-4 py-2.5 align-middle tabular-nums", className)} {...props} />;
 }

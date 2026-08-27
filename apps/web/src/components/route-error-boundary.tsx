@@ -33,7 +33,7 @@ export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
         <p className="mt-1 text-sm text-muted-foreground">
           {error instanceof Error ? error.message : "An unexpected error occurred."}
         </p>
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-4 flex justify-center gap-3">
           <Button variant="outline" size="sm" onClick={tryAgain}>
             <RotateCw className="h-3.5 w-3.5" aria-hidden="true" />
             Try again

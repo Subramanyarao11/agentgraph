@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { AnimatePresence, m } from "framer-motion";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { useHealth } from "@/hooks/use-health";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -26,17 +27,28 @@ export function HealthIndicator() {
             role="status"
             aria-live="polite"
             className={cn(
-              "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
+              "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
               allUp
                 ? "border-success/30 bg-success/10 text-success-text"
                 : "border-destructive/30 bg-destructive/10 text-destructive-text",
             )}
           >
-            {allUp ? (
-              <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-            ) : (
-              <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              <m.span
+                key={allUp ? "up" : "down"}
+                initial={{ opacity: 0, scale: 0.8, filter: "blur(3px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, scale: 0.8, filter: "blur(3px)" }}
+                transition={{ duration: 0.15 }}
+                className="flex h-3.5 w-3.5 items-center justify-center"
+              >
+                {allUp ? (
+                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                ) : (
+                  <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                )}
+              </m.span>
+            </AnimatePresence>
             {label}
             <span
               aria-hidden="true"

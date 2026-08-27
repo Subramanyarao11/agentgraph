@@ -72,11 +72,26 @@ export function CypherPanel({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-2 top-2 h-7 w-7"
+                  className="absolute right-2 top-2 h-7 w-7 overflow-hidden"
                   onClick={handleCopy}
                   aria-label="Copy query"
                 >
-                  {copied ? <Check className="h-3.5 w-3.5 text-success-text" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
+                  <AnimatePresence mode="wait" initial={false}>
+                    <m.span
+                      key={copied ? "copied" : "copy"}
+                      initial={{ opacity: 0, scale: 0.8, filter: "blur(3px)" }}
+                      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, scale: 0.8, filter: "blur(3px)" }}
+                      transition={{ duration: 0.15 }}
+                      className="flex h-3.5 w-3.5 items-center justify-center"
+                    >
+                      {copied ? (
+                        <Check className="h-3.5 w-3.5 text-success-text" aria-hidden="true" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                      )}
+                    </m.span>
+                  </AnimatePresence>
                 </Button>
               </div>
               {params && Object.keys(params).length > 0 && (
