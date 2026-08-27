@@ -194,11 +194,17 @@ export function GraphCanvas({
       const svg = svgRef.current;
       if (!svg) return;
       if (dragRef.current) {
+        // Capture the id now, into the closure, rather than reading the mutable
+        // ref again inside the updater below — setState's updater function runs
+        // whenever React gets around to processing the queued update, which can
+        // be after a near-simultaneous pointerup has already reset dragRef.current
+        // to null (this crashed with "Cannot read properties of null" in testing).
+        const draggingId = dragRef.current.id;
         const world = toViewBoxPoint(svg, e.clientX, e.clientY);
         const t = transformRef.current;
         const x = (world.x - t.x) / t.k;
         const y = (world.y - t.y) / t.k;
-        setPositions((prev) => ({ ...prev, [dragRef.current!.id]: { x, y } }));
+        setPositions((prev) => ({ ...prev, [draggingId]: { x, y } }));
       } else if (panRef.current) {
         const world = toViewBoxPoint(svg, e.clientX, e.clientY);
         const { startWorld, startTransform } = panRef.current;

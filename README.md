@@ -271,6 +271,7 @@ graphdb/
 | ![Dashboard](docs/screenshots/dashboard.jpg) Dashboard | ![Sensitive-data exposure](docs/screenshots/sensitive-data-exposure.jpg) Sensitive-data exposure |
 | ![Similar agents](docs/screenshots/similar-agents.jpg) Similar agents | ![Similarity leaderboard](docs/screenshots/similarity-leaderboard.jpg) Similarity leaderboard (async job) |
 | ![Node detail with 1-hop neighborhood graph](docs/screenshots/node-detail-graph.png) Node detail — 1-hop neighborhood graph | ![Global full-text search](docs/screenshots/global-search.jpg) Global full-text search (⌘K) |
+| ![Graph Explorer — click-to-expand graph traversal](docs/screenshots/graph-explorer.jpg) Graph Explorer — click any node to pull in its connections | ![Observability, dark mode](docs/screenshots/observability-dark-mode.jpg) Observability, dark mode — live request/query timing |
 | ![Show-query panel in dark mode](docs/screenshots/cypher-panel-dark-mode.jpg) "Show query" panel, dark mode | |
 
 ## Deploying (Render)
