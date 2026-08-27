@@ -1,0 +1,56 @@
+name: agentgraph
+
+services:
+  # Local stand-in for CognoDB Cloud. CognoDB speaks Bolt 5.0-5.4 + openCypher,
+  # wire-compatible with the official Neo4j drivers, so Neo4j is a drop-in for
+  # local dev. Point GRAPH_URI at your real bolt+s://*.databases.cognodb.cloud
+  # instance (see .env.example) to run against CognoDB Cloud instead.
+  graph:
+    image: neo4j:5.26-community
+    container_name: agentgraph-graph
+    ports:
+      - "7474:7474" # browser UI (http://localhost:7474)
+      - "7687:7687" # bolt
+    environment:
+      NEO4J_AUTH: neo4j/agentgraph_dev_password
+      NEO4J_PLUGINS: '[]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+    volumes:
+      - graph-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: agentgraph-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: agentgraph-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: agentgraph
+      POSTGRES_PASSWORD: agentgraph_dev_password
+      POSTGRES_DB: agentgraph
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agentgraph"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  graph-data:
+  postgres-data:
