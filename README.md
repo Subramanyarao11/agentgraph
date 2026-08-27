@@ -202,7 +202,11 @@ graphdb/
 
 ## Screenshots
 
-_See `docs/screenshots/` for the current UI._
+| | |
+|---|---|
+| ![Dashboard](docs/screenshots/dashboard.jpg) Dashboard | ![Sensitive-data exposure](docs/screenshots/sensitive-data-exposure.jpg) Sensitive-data exposure |
+| ![Similar agents](docs/screenshots/similar-agents.jpg) Similar agents | ![Similarity leaderboard](docs/screenshots/similarity-leaderboard.jpg) Similarity leaderboard (async job) |
+| ![Node detail with 1-hop neighborhood graph](docs/screenshots/node-detail-graph.png) Node detail — 1-hop neighborhood graph | |
 
 ## Demo
 
