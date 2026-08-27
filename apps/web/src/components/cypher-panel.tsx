@@ -64,7 +64,7 @@ export function CypherPanel({
             className="overflow-hidden"
           >
             <div className="border-t border-border px-4 py-3">
-              <p className="mb-3 text-xs text-muted-foreground">{explainer}</p>
+              <p className="mb-3 max-w-prose text-xs text-muted-foreground">{explainer}</p>
               <div className="relative">
                 <pre className="overflow-x-auto rounded-lg bg-secondary/60 p-3 font-mono text-xs leading-relaxed text-foreground">
                   <code>{trimmed}</code>
