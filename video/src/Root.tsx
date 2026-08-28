@@ -11,20 +11,20 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Folder name="AgentGraphDemo-Scenes">
-        <Composition id="Title" component={TitleScene} durationInFrames={90} fps={30} width={1280} height={720} />
-        <Composition id="WhyGraph" component={WhyGraphScene} durationInFrames={120} fps={30} width={1280} height={720} />
+        <Composition id="Title" component={TitleScene} durationInFrames={120} fps={30} width={1280} height={720} />
+        <Composition id="WhyGraph" component={WhyGraphScene} durationInFrames={150} fps={30} width={1280} height={720} />
         <Composition
           id="GraphExplorer"
           component={GraphExplorerScene}
-          durationInFrames={150}
+          durationInFrames={180}
           fps={30}
           width={1280}
           height={720}
         />
-        <Composition id="TechStack" component={TechStackScene} durationInFrames={120} fps={30} width={1280} height={720} />
-        <Composition id="Outro" component={OutroScene} durationInFrames={120} fps={30} width={1280} height={720} />
+        <Composition id="TechStack" component={TechStackScene} durationInFrames={180} fps={30} width={1280} height={720} />
+        <Composition id="Outro" component={OutroScene} durationInFrames={165} fps={30} width={1280} height={720} />
       </Folder>
-      <Composition id="AgentGraphDemo" component={MyVideo} durationInFrames={1170} fps={30} width={1280} height={720} />
+      <Composition id="AgentGraphDemo" component={MyVideo} durationInFrames={1815} fps={30} width={1280} height={720} />
     </>
   );
 };
