@@ -290,5 +290,5 @@ graphdb/
 
 ## Demo
 
-- **Hosted app:** _TODO — add link_
+- **Hosted app:** [agentgraph-web.onrender.com](https://agentgraph-web.onrender.com) (API at [agentgraph-api-ekdd.onrender.com](https://agentgraph-api-ekdd.onrender.com)) — free-tier Render instances, so the first request after a period of inactivity can take 50+ seconds to spin back up.
 - **Screen recording:** _TODO — add link_
