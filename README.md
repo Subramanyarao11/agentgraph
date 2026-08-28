@@ -291,4 +291,4 @@ graphdb/
 ## Demo
 
 - **Hosted app:** [agentgraph-web.onrender.com](https://agentgraph-web.onrender.com) (API at [agentgraph-api-ekdd.onrender.com](https://agentgraph-api-ekdd.onrender.com)) — free-tier Render instances, so the first request after a period of inactivity can take 50+ seconds to spin back up.
-- **Screen recording:** _TODO — add link_
+- **Screen recording:** [docs/demo-video.mp4](docs/demo-video.mp4) — 39s walkthrough of the deployed app (Dashboard, Graph Explorer, Impact Analysis, Sensitive-Data Exposure, Similarity Leaderboard, Observability, global search). Built with [Remotion](https://www.remotion.dev) from real screenshots of the live production deployment, source at [`video/`](video/), rather than a manual screen capture.
