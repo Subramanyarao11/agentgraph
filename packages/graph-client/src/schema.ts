@@ -23,15 +23,6 @@ const INDEXES: string[] = [
   "CREATE INDEX execution_status IF NOT EXISTS FOR (n:Execution) ON (n.status)",
 ];
 
-/** Name referenced by FULLTEXT_SEARCH_QUERY in cypher.ts — keep these in sync. */
-export const FULLTEXT_SEARCH_INDEX = "agentgraphSearch";
-
-const FULLTEXT_INDEXES: string[] = [
-  `CREATE FULLTEXT INDEX ${FULLTEXT_SEARCH_INDEX} IF NOT EXISTS ` +
-    "FOR (n:Agent|Tool|Workflow|Dataset|Person) " +
-    "ON EACH [n.name, n.description, n.role, n.vendor, n.system, n.title, n.email]",
-];
-
 export interface ApplyGraphSchemaResult {
   applied: string[];
   failed: Array<{ statement: string; message: string }>;
@@ -51,7 +42,7 @@ export async function applyGraphSchema(client: GraphClient): Promise<ApplyGraphS
   const applied: string[] = [];
   const failed: ApplyGraphSchemaResult["failed"] = [];
 
-  for (const statement of [...CONSTRAINTS, ...INDEXES, ...FULLTEXT_INDEXES]) {
+  for (const statement of [...CONSTRAINTS, ...INDEXES]) {
     try {
       await client.writeQuery(statement, {}, "schemaSetup");
       applied.push(statement);

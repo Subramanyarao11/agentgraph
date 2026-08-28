@@ -92,7 +92,7 @@ packages/
 
 Every request and every Cypher query is timed and correlated — visible live in the app at **Observability** in the sidebar, no external agent or collector to run:
 
-- **`GraphClient.readQuery`/`writeQuery`** (`packages/graph-client/src/client.ts`) take an optional `name` — every call site in `analysis.service.ts`, `catalog.service.ts`, and `search.service.ts` passes one (`"impactList"`, `"catalogDetail"`, `"fulltextSearch"`, …) — and emit a `{ name, mode, durationMs, ok }` event through an `onQuery` hook after every execution, success or failure.
+- **`GraphClient.readQuery`/`writeQuery`** (`packages/graph-client/src/client.ts`) take an optional `name` — every call site in `analysis.service.ts`, `catalog.service.ts`, and `search.service.ts` passes one (`"impactList"`, `"catalogDetail"`, `"search"`, …) — and emit a `{ name, mode, durationMs, ok }` event through an `onQuery` hook after every execution, success or failure.
 - **`RequestTracingInterceptor`** (global, `apps/api/src/common/interceptors/request-tracing.interceptor.ts`) times every HTTP request, tags it with a correlation ID (returned as `x-request-id`, echoing one the caller sent), and threads that ID through `AsyncLocalStorage` for the request's lifetime. `GraphService` wires its `onQuery` hook to read the current ID, so a slow query in the log can be traced back to the exact request that ran it.
 - **`ObservabilityService`** keeps a bounded in-memory rolling window (500 entries) of both logs and computes count/error-rate/avg/p95 — overall and grouped by route or query name — with no external store; it's process-local by design, scoped to one instance's uptime, not a multi-instance-safe metrics backend.
 - **`GET /observability/summary`** and **`GET /observability/log`** expose the aggregates and the raw recent-entry log; the frontend page polls both every 5s and renders them with the same Card/Table primitives used everywhere else in the app.
@@ -191,13 +191,17 @@ Every agent that can transitively reach PII/confidential data, with the shortest
 
 **5. Execution trace** — `/analysis/executions/:id/trace` — which agent triggered a run, which workflow it ran, and which datasets it touched, with read/write access.
 
-**6. Global full-text search** (⌘K) — `/search?q=`
+**6. Global search** (⌘K) — `/search?q=`
 ```cypher
-CALL db.index.fulltext.queryNodes("agentgraphSearch", $term + "*")
-YIELD node, score
-RETURN node, score ORDER BY score DESC LIMIT 10
+MATCH (n)
+WHERE (n:Agent OR n:Tool OR n:Workflow OR n:Dataset OR n:Person)
+  AND any(prop IN [n.name, n.description, n.role, n.vendor, n.system, n.title, n.email]
+    WHERE prop IS NOT NULL AND toLower(prop) CONTAINS toLower($term))
+RETURN n AS node,
+  CASE WHEN toLower(coalesce(n.name, n.title, "")) CONTAINS toLower($term) THEN 2 ELSE 1 END AS score
+ORDER BY score DESC, n.name LIMIT 10
 ```
-Search terms are escaped against Lucene's special-character syntax before being passed as a parameter (see `escapeLuceneTerm` in [`apps/api/src/search/search.service.ts`](./apps/api/src/search/search.service.ts)) — this is the one CognoDB headline feature (fulltext indexing) the rest of the app doesn't otherwise exercise.
+Originally built on a Lucene-backed fulltext index (`CREATE FULLTEXT INDEX` + `db.index.fulltext.queryNodes`) since that worked against local Neo4j — but testing against the real CognoDB Cloud instance surfaced that it accepts the index-creation DDL yet doesn't implement the query procedure ("fulltext indexes are not available on this server"), so the query silently worked in dev and failed in prod. Rewritten as a plain `CONTAINS`-based query, which is portable openCypher with no server-specific features, at the cost of simpler (name/title-first) ranking instead of Lucene relevance scoring.
 
 ## Frontend engineering
 
@@ -244,7 +248,7 @@ graphdb/
 │   │       ├── graph/        GraphService — GraphClient lifecycle, health
 │   │       ├── jobs/         BullMQ: async similarity leaderboard
 │   │       ├── views/        Postgres/TypeORM: saved analysis views
-│   │       ├── search/       full-text search (⌘K), CognoDB's fulltext index
+│   │       ├── search/       global search (⌘K)
 │   │       ├── health/       aggregate graph+postgres+redis health
 │   │       ├── config/       Zod-validated env config
 │   │       └── seed/         seed data generator + batched graph loader
@@ -270,7 +274,7 @@ graphdb/
 |---|---|
 | ![Dashboard](docs/screenshots/dashboard.jpg) Dashboard | ![Sensitive-data exposure](docs/screenshots/sensitive-data-exposure.jpg) Sensitive-data exposure |
 | ![Similar agents](docs/screenshots/similar-agents.jpg) Similar agents | ![Similarity leaderboard](docs/screenshots/similarity-leaderboard.jpg) Similarity leaderboard (async job) |
-| ![Node detail with 1-hop neighborhood graph](docs/screenshots/node-detail-graph.png) Node detail — 1-hop neighborhood graph | ![Global full-text search](docs/screenshots/global-search.jpg) Global full-text search (⌘K) |
+| ![Node detail with 1-hop neighborhood graph](docs/screenshots/node-detail-graph.png) Node detail — 1-hop neighborhood graph | ![Global search](docs/screenshots/global-search.jpg) Global search (⌘K) |
 | ![Graph Explorer — click-to-expand graph traversal](docs/screenshots/graph-explorer.jpg) Graph Explorer — click any node to pull in its connections | ![Observability, dark mode](docs/screenshots/observability-dark-mode.jpg) Observability, dark mode — live request/query timing |
 | ![Show-query panel in dark mode](docs/screenshots/cypher-panel-dark-mode.jpg) "Show query" panel, dark mode | |
 

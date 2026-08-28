@@ -16,9 +16,8 @@ export function openCommandPalette() {
 }
 
 /**
- * Global ⌘K / Ctrl+K search over every Agent/Tool/Workflow/Dataset/Person,
- * backed by CognoDB's fulltext index (see FULLTEXT_SEARCH_QUERY) — the one
- * headline CognoDB capability the rest of the app doesn't otherwise touch.
+ * Global ⌘K / Ctrl+K search over every Agent/Tool/Workflow/Dataset/Person
+ * (see SEARCH_QUERY in graph-schema/cypher.ts).
  *
  * Full ARIA combobox pattern (role, aria-activedescendant) plus Up/Down to
  * move, Enter to open the highlighted result — not just a mouse-click list.
@@ -147,7 +146,7 @@ export function CommandPalette() {
           </div>
 
           <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[11px] text-tertiary-foreground">
-            <span>Full-text search over CognoDB's fulltext index</span>
+            <span>Search across agents, tools, workflows, datasets, and people</span>
             <span className="flex items-center gap-2">
               <kbd className="rounded border border-border px-1.5 py-0.5">↑↓ to navigate</kbd>
               <kbd className="rounded border border-border px-1.5 py-0.5">esc to close</kbd>

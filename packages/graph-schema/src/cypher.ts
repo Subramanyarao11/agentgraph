@@ -108,12 +108,22 @@ export const SIMILARITY_LEADERBOARD_QUERY = `
   LIMIT 50
 `;
 
-/** Full-text search across every searchable node label (see the fulltext index created in schema.ts). */
-export const FULLTEXT_SEARCH_QUERY = `
-  CALL db.index.fulltext.queryNodes("agentgraphSearch", $term + "*")
-  YIELD node, score
-  RETURN node, score
-  ORDER BY score DESC
+/**
+ * Search across every searchable node label. Plain CONTAINS rather than a fulltext
+ * index/procedure — CognoDB Cloud accepts \`CREATE FULLTEXT INDEX\` but its query engine
+ * doesn't implement \`db.index.fulltext.queryNodes\` ("fulltext indexes are not available
+ * on this server"), so a Lucene-backed query that works fine against local Neo4j fails
+ * outright against the real target database. CONTAINS is plain openCypher, so it runs
+ * anywhere. Ranks a name/title match above a match found only in a longer field.
+ */
+export const SEARCH_QUERY = `
+  MATCH (n)
+  WHERE (n:Agent OR n:Tool OR n:Workflow OR n:Dataset OR n:Person)
+    AND any(prop IN [n.name, n.description, n.role, n.vendor, n.system, n.title, n.email]
+      WHERE prop IS NOT NULL AND toLower(prop) CONTAINS toLower($term))
+  RETURN n AS node,
+    CASE WHEN toLower(coalesce(n.name, n.title, "")) CONTAINS toLower($term) THEN 2 ELSE 1 END AS score
+  ORDER BY score DESC, n.name
   LIMIT 10
 `;
 

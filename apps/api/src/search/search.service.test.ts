@@ -13,14 +13,14 @@ function fakeGraphService(records: Array<{ node: unknown; score: number }>) {
 }
 
 describe("SearchService", () => {
-  it("escapes Lucene special characters in the search term before querying", async () => {
+  it("passes the raw search term as a query parameter", async () => {
     const { graph, readQuery } = fakeGraphService([]);
     const service = new SearchService(graph);
 
     await service.search('C++ (backend) AND "on-call"');
 
     const [, params] = readQuery.mock.calls[0]!;
-    expect(params).toEqual({ term: 'C\\+\\+ \\(backend\\) AND \\"on\\-call\\"' });
+    expect(params).toEqual({ term: 'C++ (backend) AND "on-call"' });
   });
 
   it("maps matched nodes with their relevance score", async () => {

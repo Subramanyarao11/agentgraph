@@ -219,7 +219,7 @@ export const ObservabilityLogDto = z.object({
 });
 export type ObservabilityLogDto = z.infer<typeof ObservabilityLogDto>;
 
-/** Global full-text search (⌘K) — backed by CognoDB's fulltext index support. */
+/** Global search (⌘K) across every Agent/Tool/Workflow/Dataset/Person. */
 export const SearchQuery = z.object({
   q: z.string().trim().min(1).max(120),
 });
